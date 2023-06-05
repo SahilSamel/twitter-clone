@@ -1,1 +1,1 @@
-Initial Commit on twitter clone
+Twitter Clone made using MERN stack
