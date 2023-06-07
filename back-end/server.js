@@ -2,7 +2,7 @@ import  path  from "path";
 import  express from "express";
 import mongoose from "mongoose";
 import  application  from "express";
-import mongo from "./connections/mongoDB"
+import mongo from "./connections/mongoDB.js"
 
 const app = express();
 

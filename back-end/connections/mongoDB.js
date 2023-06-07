@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-
-const db = "mongodb+srv://twitterclone420:<password>@twitter-clone.cou0rwh.mongodb.net/Twitter_Clone?retryWrites=true&w=majority";
+import 'dotenv/config'
 
 const mongo = async () => {
   try {
-    await mongoose.connect(db);
+    mongoose.set('strictQuery', false);
+    mongoose.connect(process.env.MongoDB);
     console.log("Connected to MongoDB Atlas");
   } catch (error) {
     console.log(error);
   }
 };
 
-module.exports = mongo;
+export default mongo;
