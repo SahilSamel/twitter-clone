@@ -11,8 +11,9 @@ const mongo = async () => {
     });
     console.log("Connected to MongoDB Atlas");
   } catch (error) {
-    console.log(error);
+    console.log("Error connecting to MongoDB:", error);
   }
 };
 
 export default mongo;
+
