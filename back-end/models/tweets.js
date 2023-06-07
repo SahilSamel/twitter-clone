@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
 const tweetsSchema = new mongoose.Schema({
-    uid: { type: mongoose.Schema.Types.ObjectId, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     tweets: [
       {
-        tweetId: { type: mongoose.Schema.Types.ObjectId },
         type: { type: Number, default: 0, enum: [0, 1, 2] }, 
         text: { type: String },
         mediaURL: { type: String },
@@ -21,7 +20,6 @@ const tweetsSchema = new mongoose.Schema({
     ],
 });
 
-const Tweets = mongoose.model("Tweet", tweetsSchema);
+const Tweet = mongoose.model("Tweet", tweetsSchema);
 
-export default Tweets;
-  
+export default Tweet;

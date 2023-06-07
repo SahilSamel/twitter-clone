@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
   followersCount: { type: Number, default: 0 },
   followeesCount: { type: Number, default: 0 },
   feedCache: [
@@ -33,3 +32,4 @@ const usersSchema = new mongoose.Schema({
 const User = mongoose.model("User", usersSchema);
 
 export default User;
+
