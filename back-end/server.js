@@ -3,11 +3,14 @@ import  express from "express";
 import mongoose from "mongoose";
 import  application  from "express";
 import mongo from "./connections/mongoDB.js"
+import driver from "./connections/neo4j.js";
 
 const app = express();
 
 //MongoDB Connection
 mongo();
+
+
 
 //Connection to port
 const PORT = process.env.PORT || 6969;
