@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema({
-  uid: { type: mongoose.Schema.Types.ObjectId, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
   followersCount: { type: Number, default: 0 },
   followeesCount: { type: Number, default: 0 },
   feedCache: [
     {
-      uid: { type: mongoose.Schema.Types.ObjectId, required: true },
-      tweetid: { type: mongoose.Schema.Types.ObjectId, required: true }
+      userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
     }
   ],
   activityNum: { type: Number, default: 0 },
@@ -18,14 +18,14 @@ const usersSchema = new mongoose.Schema({
   bgImageURL: { type: String },
   bookmarks: [
     {
-      uid: { type: mongoose.Schema.Types.ObjectId, required: true },
-      tweetid: { type: mongoose.Schema.Types.ObjectId, required: true }
+      userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
     }
   ],
-  likes: [
+  liked: [
     {
-      uid: { type: mongoose.Schema.Types.ObjectId, required: true },
-      tweetid: { type: mongoose.Schema.Types.ObjectId, required: true }
+      userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+      tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
     }
   ]
 });
