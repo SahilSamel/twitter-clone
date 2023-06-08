@@ -20,15 +20,45 @@ router.post("/signin", (req, res) => {
   signIn(req, res);
 });
 
-router.post("/check", (req, res) => {
-  fetchSignInMethodsForEmail(auth,"sahilsamel134@gmail.com").then((result) => {
-    console.log(result);
-  })
-  .catch((error)=>{
-    console.log(error)
-  });
+import admin from 'firebase-admin';
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+import fs from 'fs';
 
-  res.status(201).json({ body: req.body });
+// Get the directory path of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Path to your service account JSON file
+const serviceAccountPath = path.join(__dirname, 'sa.json');
+
+// Read the service account JSON file
+const serviceAccountData = fs.readFileSync(serviceAccountPath, 'utf8');
+
+// Parse the service account JSON data
+const serviceAccount = JSON.parse(serviceAccountData);
+
+// Initialize the Firebase Admin SDK
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
+
+
+
+router.post("/check", (req, res) => {
+  const email = "sahilsamel13@gmail.com";
+
+  admin.auth().getUserByEmail(email)
+    .then((userRecord) => {
+      console.log(userRecord.email);
+      res.status(200).json({ exists: true });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(200).json({ exists: false });
+    });
+});
+
+  
 
 export default router;

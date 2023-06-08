@@ -1,3 +1,4 @@
 node_modules/
 .env
 firebaseconfig.js
+sa.json
