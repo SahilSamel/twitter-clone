@@ -15,14 +15,17 @@ dotenv.config();
 
 const createUser = (req,res) => {
   const auth = getAuth();
-  const {email, password} = req.body;
+  const {email, password, userHandle} = req.body;
+
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
-      registerUser(uid);
+
+
+      registerUser(uid, userHandle);
       res.status(201).json({ token, uid });
     })
     .catch((error) => {

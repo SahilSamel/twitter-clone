@@ -28,6 +28,7 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 //Routes
 app.use("/auth", authRoutes);
+// app.use("/profile", authRoutes);
 
 
 //Connection to port

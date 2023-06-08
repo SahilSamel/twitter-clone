@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.post("/signup", (req, res) => {
   createUser(req, res);
-  
 });
 
 router.post("/signin", (req, res) => {
