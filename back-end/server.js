@@ -3,6 +3,7 @@ import  path  from "path";
 import  express from "express";
 import mongoose from "mongoose";
 import  application  from "express";
+import helmet from 'helmet';
 
 //Connections import
 import mongo from "./connections/mongoDB.js"
@@ -11,7 +12,8 @@ import fapp from "./connections/firebaseconfig.js";
 const app = express();
 
 //Route Imports
-const authRoutes = require('./routes/auth.js');
+import authRoutes from './routes/auth.js';
+
 
 //MongoDB connection
 mongo();
@@ -20,10 +22,9 @@ mongo();
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
-app.use(bodyParser.json({ limit: "30mb", extended: true }));
-app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
-app.use(morgan("common"));
+// app.use(bodyParser.json({ limit: "30mb", extended: true }));
+// app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
+// app.use(cors());
 
 //Routes
 app.use("/auth", authRoutes);

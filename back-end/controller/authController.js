@@ -35,4 +35,4 @@ const createUser = (req,res) => {
 //     });
 // };
 
-export { createUser, signIn };
+export { createUser };
