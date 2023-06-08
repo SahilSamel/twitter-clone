@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const tweetsSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    userId: { type: String, required: true },
     tweets: [
       {
         type: { type: Number, default: 0, enum: [0, 1, 2] }, 
@@ -13,7 +13,7 @@ const tweetsSchema = new mongoose.Schema({
         timestamp: { type: Date, required: true },
         likes: [
           {
-            userId: { type: mongoose.Schema.Types.ObjectId },
+            userId: { type: String },
           },
         ],
       },
