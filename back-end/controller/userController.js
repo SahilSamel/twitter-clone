@@ -4,9 +4,10 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 import fs from 'fs';
 import neo4j from 'neo4j-driver';
+import driver from '../connections/neo4j.js'
 
 //neo4j session creation
-const driver = neo4j.driver(process.env.NeoURI, neo4j.auth.basic(process.env.NeoUSER, process.env.NeoPASS));
+
 const session = driver.session();
 
 
@@ -42,9 +43,11 @@ const registerUser = (uid, userHandle) => {
       'CREATE (:User {uid: $uid})',
       {uid}
     );
-    const savedUser = newUser.save();
+    newUser.save();
   } catch (error) {
-      throw new Error("Error registering user");
+    throw new Error("Error registering user");
+  } finally{
+    session.close();
   }
 };
 

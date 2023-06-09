@@ -8,7 +8,6 @@ import {
 
 import {registerUser, checkHandle} from "./userController.js";
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 
 dotenv.config();
