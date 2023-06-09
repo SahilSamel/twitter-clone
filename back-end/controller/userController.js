@@ -22,16 +22,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-
-const checkEmail = (email) => {
-  admin.auth().getUserByEmail(email)
-    .then((userRecord) => {
-    })
-    .catch((error) => {
-      throw new Error("Email already exists");
-    });
-}
-
 const checkHandle = (userHandle) => {
   User.findOne({
     userHandle:userHandle
@@ -57,4 +47,4 @@ const registerUser = (uid) => {
     }
 }
 
-export {registerUser, checkEmail, checkHandle};
+export {registerUser, checkHandle};
