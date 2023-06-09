@@ -34,7 +34,7 @@ const checkHandle = (userHandle) => {
   )
 }
 
-const registerUser = (uid) => {
+const registerUser = (uid,userHandle) => {
     const newUser = new User({
         uid,
         userHandle

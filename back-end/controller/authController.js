@@ -13,28 +13,31 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const createUser = (req,res) => {
+const createUser = (req, res) => {
   const auth = getAuth();
-  const {email, password, userHandle} = req.body;
+  const { email, password, userHandle } = req.body;
 
-  try{
+  try {
     checkHandle(userHandle);
-  }catch(error){
+  } catch (error) {
     res.status(409).json({ error: error.message });
+    return;
   }
-  createUserWithEmailAndPassword(auth, email, password)
+
+  createUserWithEmailAndPassword(auth, email, password, userHandle)
     .then((userCredential) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
 
-      registerUser(uid, userHandle);
+      registerUser(uid, userHandle); // Pass the userHandle to the registerUser function
       res.status(201).json({ token, uid });
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
     });
 };
+
 
 const signIn = (req,res) => {
   const auth = getAuth();
