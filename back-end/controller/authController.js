@@ -6,7 +6,7 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 
-import {registerUser} from "./userController.js";
+import {registerUser, checkEmail, checkHandle} from "./userController.js";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
@@ -17,20 +17,23 @@ const createUser = (req,res) => {
   const auth = getAuth();
   const {email, password, userHandle} = req.body;
 
-
+  try{
+    checkEmail(email);
+    checkHandle(userHandle);
+  }catch(error){
+    res.status(409).json({ error: error.message });
+  }
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
 
-
       registerUser(uid, userHandle);
       res.status(201).json({ token, uid });
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
+      res.status(409).json({ error: error.message });
     });
 };
 
