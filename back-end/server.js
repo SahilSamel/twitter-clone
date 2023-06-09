@@ -1,45 +1,42 @@
-//Main import
-import  path  from "path";
-import  express from "express";
+import path from "path";
+import express from "express";
 import mongoose from "mongoose";
-import  application  from "express";
+import application from "express";
 import helmet from 'helmet';
 import bodyParser from "body-parser";
 
-//Connections import
-import mongo from "./connections/mongoDB.js"
+// <-- Connections import -->
+import mongo from "./connections/mongoDB.js";
 import driver from "./connections/neo4j.js";
 import fapp from "./connections/firebaseconfig.js";
 const app = express();
+// <-- End of Connections import -->
 
-//Route Imports
+// <-- Route Imports -->
 import authRoutes from './routes/auth.js';
+// <-- End of Route Imports -->
 
-
-//MongoDB connection
+// MongoDB connection
 mongo();
 
-// Middleware
+
+// <-- Middleware -->
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cors());
+// <-- End of Middleware -->
 
-//Routes
+// <-- Routes -->
 app.use("/auth", authRoutes);
-// app.use("/profile", authRoutes);
+// <-- End of Routes -->
 
 
-//Connection to port
+// Connection to port
 const PORT = process.env.PORT || 6969;
-app.listen
-(
-    PORT,
-    (err) =>{
-        if(err)
-            throw err;
-        console.log(`Server started on PORT ${PORT}...`);
-    }
-);
+app.listen(PORT, (err) => {
+  if (err)
+    throw err;
+  console.log(`Server started on PORT ${PORT}...`);
+});

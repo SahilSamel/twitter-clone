@@ -1,29 +1,17 @@
-import User from "../models/users.js"
-import admin from 'firebase-admin';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
-import fs from 'fs';
-import neo4j from 'neo4j-driver';
-import driver from '../connections/neo4j.js'
+import User from "../models/users.js";
+import admin from "firebase-admin";
+import driver from "../connections/neo4j.js";
+import serviceAccount from "../connections/firebaseAdmin.js";
 
-//neo4j session creation
+const session = driver.session();                                          //neo4j session creation
 
-const session = driver.session();
-
-
-// Get the directory path of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const serviceAccountPath = path.join(__dirname, 'sa.json');
-// Read the service account JSON file
-const serviceAccountData = fs.readFileSync(serviceAccountPath, 'utf8');
-// Parse the service account JSON data
-const serviceAccount = JSON.parse(serviceAccountData);
-// Initialize the Firebase Admin SDK
+// <-- Firebase admin SDK Initialization-->
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
+// <-- End of Firebase admin SDK Initialization-->
 
+//<-- Database Queries for Authentication -->
 const checkHandle = (userHandle) => {
   return User.findOne({ userHandle: userHandle }).then((user) => {
     if (user) {
@@ -31,24 +19,27 @@ const checkHandle = (userHandle) => {
     }
   });
 };
+//<--End of Database Queries for Authentication -->
 
+//<-- Database Entry for User -->
 const registerUser = (uid, userHandle) => {
   const newUser = new User({
     uid,
-    userHandle
+    userHandle,
   });
 
   try {
     const result = session.run(
-      'CREATE (:User {uid: $uid})',
-      {uid}
+      "CREATE (:User {uid: $uid})",                                         //Create query for neo4j cypher
+      { uid }
     );
-    newUser.save();
+    newUser.save();                                                         //Query to create user in mongo using mongoose
   } catch (error) {
     throw new Error("Error registering user");
-  } finally{
+  } finally {
     session.close();
   }
 };
+//<-- End of Database Entry for User -->
 
-export {registerUser, checkHandle};
+export { registerUser, checkHandle };

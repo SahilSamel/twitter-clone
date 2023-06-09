@@ -7,19 +7,17 @@ import verifyToken from "../middleware/verifyToken.js";
 const auth = getAuth();
 const router = express.Router();
 
+//<-- USER AUTHENTICATION -->
 
+// => Creating user in firebase, mongo and neo4j                                                     
 router.post("/signup", (req, res) => {
-  createUser(req, res);
+  createUser(req, res);                                                                     
 });
 
+// => Authenticating user with firebase function
 router.post("/signin", (req, res) => {
-  signIn(req, res);
+  signIn(req, res);                                                             
 });
-
-
-// <--- NODEMAILER SMTP  --->
-
-// import nodemailer from "nodemailer"
 
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail',
