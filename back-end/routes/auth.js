@@ -1,14 +1,8 @@
 import express from "express";
 import { createUser, signIn } from "../controller/authController.js";
-import {
-  fetchSignInMethodsForEmail,
-  getAuth,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
-
+import {getAuth} from "firebase/auth";
 import verifyToken from "../middleware/verifyToken.js";
 
-// import nodemailer from "nodemailer"
 
 const auth = getAuth();
 const router = express.Router();
@@ -21,6 +15,11 @@ router.post("/signup", (req, res) => {
 router.post("/signin", (req, res) => {
   signIn(req, res);
 });
+
+
+// <--- NODEMAILER SMTP  --->
+
+// import nodemailer from "nodemailer"
 
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail',
@@ -52,4 +51,9 @@ router.post("/signin", (req, res) => {
 
 //   });
 
+// <--- End of NODEMAILER SMTP --->
+
+
 export default router;
+
+
