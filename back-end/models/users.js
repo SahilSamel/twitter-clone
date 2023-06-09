@@ -12,7 +12,7 @@ const usersSchema = new mongoose.Schema({
       tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
     }
   ],
-  activityNum: { type: Number, default: 0 },
+  activityNum: { type: Number, default: 0 },                                     
   bio: { type: String },
   location: { type: String },
   birthdate: { type: Date},

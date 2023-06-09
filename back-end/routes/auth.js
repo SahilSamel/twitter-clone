@@ -5,7 +5,6 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-
 import verifyToken from "../middleware/verifyToken.js";
 
 // import nodemailer from "nodemailer"
@@ -13,14 +12,19 @@ import verifyToken from "../middleware/verifyToken.js";
 const auth = getAuth();
 const router = express.Router();
 
+//<-- USER AUTHENTICATION -->
 
+// => Creating user in firebase, mongo and neo4j                                                     
 router.post("/signup", (req, res) => {
-  createUser(req, res);
+  createUser(req, res);                                                                     
 });
 
+// => Authenticating user with firebase function
 router.post("/signin", (req, res) => {
-  signIn(req, res);
+  signIn(req, res);                                                             
 });
+
+//<-- End of USER AUTHENTICATION -->
 
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail',
