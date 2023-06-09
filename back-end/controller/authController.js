@@ -17,14 +17,10 @@ const createUser = (req, res) => {
   const auth = getAuth();
   const { email, password, userHandle } = req.body;
 
-  try {
-    checkHandle(userHandle);
-  } catch (error) {
-    res.status(409).json({ error: error.message });
-    return;
-  }
-
-  createUserWithEmailAndPassword(auth, email, password, userHandle)
+  checkHandle(userHandle)
+    .then(() => {
+      return createUserWithEmailAndPassword(auth, email, password, userHandle);
+    })
     .then((userCredential) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);

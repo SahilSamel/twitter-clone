@@ -23,16 +23,12 @@ admin.initializeApp({
 });
 
 const checkHandle = (userHandle) => {
-  User.findOne({
-    userHandle:userHandle
-  }).then(
-    (user) => {
-        if(user){
-          throw new Error("User Handle already exists");
-        }
+  return User.findOne({ userHandle: userHandle }).then((user) => {
+    if (user) {
+      throw new Error("User Handle already exists");
     }
-  )
-}
+  });
+};
 
 const registerUser = (uid,userHandle) => {
     const newUser = new User({
