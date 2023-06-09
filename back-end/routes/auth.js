@@ -9,16 +9,20 @@ const router = express.Router();
 
 //<-- USER AUTHENTICATION -->
 
-// => Creating user in firebase, mongo and neo4j                                                     
+// Creating user in firebase, mongo and neo4j                                                     
 router.post("/signup", (req, res) => {
   createUser(req, res);                                                                     
 });
 
-// => Authenticating user with firebase function
+// Authenticating user with firebase function
 router.post("/signin", (req, res) => {
   signIn(req, res);                                                             
 });
 
+//<--End of USER AUTHENTICATION -->
+
+
+// <--- NODEMAILER SMTP --->
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail',
 //   auth: {
