@@ -14,6 +14,7 @@ const app = express();
 
 // <-- Route Imports -->
 import authRoutes from './routes/auth.js';
+import authRoutes from './routes/tweet.js';
 // <-- End of Route Imports -->
 
 // MongoDB connection
