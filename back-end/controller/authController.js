@@ -16,7 +16,7 @@ const session = driver.session(); //neo4j session creation
 
 dotenv.config();
 
-//<-- User Authentication -->
+//<-- USER AUTHENTICATION -->
 
 //Database Queries for Authentication 
 const checkHandle = (userHandle) => {
@@ -40,11 +40,11 @@ const registerUser = (uid, userHandle) => {
       "CREATE (:User {uid: $uid})", //Create query for neo4j cypher
       { uid }
     );
-    newUser.save(); //Query to create user in mongo using mongoose
+    newUser.save();
+    session.close(); //Query to create user in mongo using mongoose
   } catch (error) {
     throw new Error("Error registering user");
-  } finally {
-    session.close();
+    session.close(); //Query to create user in mongo using mongoose
   }
 };
 //

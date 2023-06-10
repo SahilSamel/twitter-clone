@@ -14,7 +14,6 @@ const verifyToken = (req, res, next) => {
 
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = verified;
-    console.log(req.user);
     next(); // Call next() to move to the next middleware/route handler
   } catch (err) {
     res.status(500).json({ error: err.message });
