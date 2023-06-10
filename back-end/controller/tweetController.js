@@ -43,34 +43,6 @@ const createTweet = (req, res) => {
     .catch((error) => {
     console.error('Error creating thread:', error);
     });
-
-
-      const newTweet = {
-        type: parseInt(type),
-        text: text || "",
-        mediaURL: mediaURL || "",
-        derivedUserId: derivedUserId || null,
-        derivedTweetId: derivedTweetId || null,
-        threadId: threadId || null,
-        timestamp: new Date(),
-        likes: [],
-      };
-
-      Tweet.findOneAndUpdate(
-        { userId },
-        { $push: { tweets: newTweet } },
-        { new: true, upsert: true }
-      )
-        .then((updatedUser) => {
-          console.log("Updated user:", updatedUser);
-        })
-        .catch((error) => {
-          console.error("Error updating user:", error);
-        });
-    })
-    .catch((error) => {
-      console.error("Error creating thread:", error);
-    });
 };
 
 // Delete Tweet
