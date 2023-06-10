@@ -26,7 +26,6 @@ const checkHandle = (userHandle) => {
     }
   });
 };
-//
 
 //Database Entry for User 
 const registerUser = (uid, userHandle) => {
