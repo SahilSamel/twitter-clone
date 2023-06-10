@@ -22,6 +22,7 @@ router.post("/signin", (req, res) => {
 //<--End of USER AUTHENTICATION -->
 
 
+
 // <--- NODEMAILER SMTP --->
 // const transporter = nodemailer.createTransport({
 //   service: 'gmail',
