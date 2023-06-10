@@ -1,7 +1,4 @@
-import path from "path";
 import express from "express";
-import mongoose from "mongoose";
-import application from "express";
 import helmet from 'helmet';
 import bodyParser from "body-parser";
 
@@ -13,8 +10,8 @@ const app = express();
 // <-- End of Connections import -->
 
 // <-- Route Imports -->
-import authRoutes from './routes/auth.js';
-import tweetRoutes from './routes/tweet.js';
+import authRoutes from './routes/authRoutes.js';
+import tweetRoutes from './routes/tweetRoutes.js';
 // <-- End of Route Imports -->
 
 // MongoDB connection
