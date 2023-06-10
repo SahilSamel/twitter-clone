@@ -4,7 +4,7 @@ const tweetsSchema = new mongoose.Schema({
     userId: { type: String, required: true },
     tweets: [
       {
-        type: { type: Number, default: 0, enum: [0, 1, 2] }, 
+        type: { type: Number, default: 0, enum: [0, 1, 2, 3] }, 
         text: { type: String },
         mediaURL: { type: String },
         derivedUserId: { type: mongoose.Schema.Types.ObjectId },
