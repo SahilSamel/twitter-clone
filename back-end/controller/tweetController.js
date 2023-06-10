@@ -17,36 +17,42 @@
 // ],
 
 import Tweet from "../models/tweets.js";
+
+//  <--- TWEET FUNCTIONS --->
+
+//  Create a new Tweet
 const createTweet = (req, res) => {
   const userId = req.userId.id;
-  const timestamp = new Date;
-  const { type, text, mediaURL, derivedUserId, derivedTweetId,threadId} = req.body;
-    console.log(userId)
-  console.log(req.body)
+  const timestamp = new Date();
+  const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId } =
+    req.body;
+  console.log(userId);
+  console.log(req.body);
 
   const newTweet = {
-    type: 0,
-    text: text || '',
-    mediaURL: mediaURL || '',
+    type: parseInt(type),
+    text: text || "",
+    mediaURL: mediaURL || "",
     derivedUserId: derivedUserId || null,
     derivedTweetId: derivedTweetId || null,
     threadId: threadId || null,
-    timestamp: new Date(),  
-    likes: []
+    timestamp: new Date(),
+    likes: [],
   };
-  
+
   Tweet.findOneAndUpdate(
     { userId },
     { $push: { tweets: newTweet } },
     { new: true, upsert: true }
   )
-    .then(updatedUser => {
-      console.log('Updated user:', updatedUser);
+    .then((updatedUser) => {
+      console.log("Updated user:", updatedUser);
     })
-    .catch(error => {
-      console.error('Error updating user:', error);
+    .catch((error) => {
+      console.error("Error updating user:", error);
     });
-
 };
+
+//  <--- End of TWEET FUNCTIONS --->
 
 export { createTweet };
