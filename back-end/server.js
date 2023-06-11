@@ -13,6 +13,7 @@ const app = express();
 import authRoutes from './routes/authRoutes.js';
 import tweetRoutes from './routes/tweetRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 // <-- End of Route Imports -->
 
 // MongoDB connection
@@ -31,6 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/auth", authRoutes);
 app.use("/compose", tweetRoutes);
 app.use("/profile", profileRoutes);
+app.use("/user", userRoutes);
 // <-- End of Routes -->
 
 

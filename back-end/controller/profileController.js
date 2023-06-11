@@ -12,7 +12,7 @@ admin.initializeApp({
 // <-- End of Firebase admin SDK Initialization-->
 
 
-// <-- PROFILE FUNCTIONS -->
+// <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
 //Update Bio
 const updateBio = (req, res) => {
@@ -31,6 +31,10 @@ const updateBio = (req, res) => {
       res.status(500).json({ error: "Error updating bio" });
     });
 };
+
+// <-- End of PROFILE PARAMETER UPDATE FUNCTIONS -->
+
+// <-- DELETE USER FUNCTION -->
 
 //Deleting user
 const deleteUser = async (req, res) => {
@@ -53,6 +57,6 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// <-- End of PROFILE FUNCTIONS -->
+// <-- End of DELETE USER FUNCTION -->
 
 export { deleteUser, updateBio };

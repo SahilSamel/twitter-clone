@@ -16,7 +16,7 @@ const session = driver.session(); //neo4j session creation
 
 dotenv.config();
 
-//<-- USER AUTHENTICATION -->
+//<-- USER AUTHENTICATION FUNCTIONS -->
 
 //Database Queries for Authentication 
 const checkHandle = (userHandle) => {
@@ -87,6 +87,6 @@ const signIn = (req, res) => {
     });
 };
 
-//<-- End of User Authentication -->
+//<-- End of USER AUTHENTICATION FUNCTIONS -->
 
 export { createUser, signIn };

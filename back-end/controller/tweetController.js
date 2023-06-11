@@ -2,7 +2,7 @@ import Tweet from "../models/tweets.js";
 import Thread from "../models/threads.js";
 import User from "../models/users.js";
 
-//  <--- TWEET FUNCTIONS --->
+//  <--- TWEET CREATION FUNCTIONS --->
 
 //  Create a new Tweet
 const createTweet = (req, res) => {
@@ -64,8 +64,13 @@ const deleteTweet = (req, res) => {
         }
       }
     }
-  );
-};
+    );
+  };
+  
+//  <--- End of TWEET CREATION FUNCTIONS --->
+
+
+// <-- LIKE/DISLIKE FUNCTIONS -->
 
 // Like tweet
 const likeTweet = (req, res) => {
@@ -119,45 +124,6 @@ const dislikeTweet = (req, res) => {
     });
 };
 
-const bookmark = (req, res) => {
-  const userId = req.userId.id;
-  const { tweetUserId, tweetId } = req.body;
+// <-- End of LIKE/DISLIKE FUNCTIONS -->
 
-  User.findOneAndUpdate(
-    { uid: userId },
-    { $push: { bookmarks: { userId: tweetUserId, tweetId } } }
-  )
-    .then(() => {
-      res.status(200).json({ message: "Tweet bookmarked successfully" });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while bookmarking tweet" });
-    });
-};
-
-const unbookmark = (req, res) => {
-  const userId = req.userId.id;
-  const { tweetUserId, tweetId } = req.body;
-
-  User.findOneAndUpdate(
-    { uid: userId },
-    { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
-  )
-    .then(() => {
-      res.status(200).json({ message: "Tweet unbookmarked successfully" });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while bookmarking tweet" });
-    });
-};
-
-//  <--- End of TWEET FUNCTIONS --->
-
-export {
-  createTweet,
-  deleteTweet,
-  likeTweet,
-  dislikeTweet,
-  bookmark,
-  unbookmark,
-};
+export { createTweet, deleteTweet, likeTweet, dislikeTweet };

@@ -3,18 +3,22 @@ import verifyToken from "../middleware/verifyToken.js";
 import { deleteUser, updateBio } from "../controller/profileController.js";
 const router = express.Router();
 
-//<--- PROFILE FUNCTIONALITIES --->
+//<--- PROFILE UPDATE FUNCTIONALITIES --->
 
 //Update bio
 router.post("/updateBio", verifyToken, (req, res) => {
     updateBio(req, res);
 });
 
+//<--- End of PROFILE UPDATE FUNCTIONALITIES --->
+
+// <-- DELETE USER FUNCTIONALITY -->
+
 //Delete the account
 router.post("/deleteAccount", verifyToken, (req, res) => {
     deleteUser(req, res);
 });
 
-//<--- End of PROFILE FUNCTIONALITIES --->
+// <-- End of DELETE USER FUNCTIONALITY -->
 
 export default router;

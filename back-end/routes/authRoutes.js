@@ -7,7 +7,7 @@ import verifyToken from "../middleware/verifyToken.js";
 const auth = getAuth();
 const router = express.Router();
 
-//<-- USER AUTHENTICATION -->
+//<-- USER AUTHENTICATION FUNCTIONALITIES -->
 
 // Creating user in firebase, mongo and neo4j                                                     
 router.post("/signup", (req, res) => {
@@ -19,7 +19,7 @@ router.post("/signin", (req, res) => {
   signIn(req, res);                                                             
 });
 
-//<--End of USER AUTHENTICATION -->
+//<--End of USER AUTHENTICATION FUNCTIONALITIES -->
 
 
 
