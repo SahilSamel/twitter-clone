@@ -10,15 +10,11 @@ import dotenv from "dotenv";
 import driver from "../connections/neo4j.js";
 import User from "../models/users.js";
 
-const session = driver.session(); //neo4j session creation
-
-
-
 dotenv.config();
 
 //<-- USER AUTHENTICATION FUNCTIONS -->
 
-//Database Queries for Authentication 
+//Database Queries for Authentication
 const checkHandle = (userHandle) => {
   return User.findOne({ userHandle: userHandle }).then((user) => {
     if (user) {
@@ -27,24 +23,44 @@ const checkHandle = (userHandle) => {
   });
 };
 
-//Database Entry for User 
+//Database Entry for User
 const registerUser = (uid, userHandle) => {
   const newUser = new User({
     uid,
     userHandle,
   });
+  const session = driver.session(); //neo4j session creation
 
-  try {
-    const result = session.run(
-      "CREATE (:User {uid: $uid})", //Create query for neo4j cypher
-      { uid }
-    );
-    newUser.save();
-    session.close(); //Query to create user in mongo using mongoose
-  } catch (error) {
-    throw new Error("Error registering user");
-    session.close(); //Query to create user in mongo using mongoose
-  }
+  session
+    .run("CREATE (:User {uid: $uid})", { uid }) // Create query for Neo4j Cypher
+    .then((neo4jResult) => {
+      if (neo4jResult.records.length === 0) {
+        console.log("Node creation failed. No records returned.");
+        return;
+      }
+
+      const summary = neo4jResult.summary;
+      if (summary.counters.nodesCreated() > 0) {
+        console.log("Node created successfully.");
+
+        newUser
+          .save()
+          .then(() => {
+            console.log("User saved successfully.");
+          })
+          .catch((error) => {
+            console.log("Error saving user:", error);
+          });
+      } else {
+        console.log("Node creation failed.");
+      }
+    })
+    .catch((error) => {
+      console.log("Error creating node:", error);
+    })
+    .finally(() => {
+      session.close(); // Close the Neo4j session
+    });
 };
 //
 

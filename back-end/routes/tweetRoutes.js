@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { createTweet, deleteTweet, likeTweet, dislikeTweet, bookmark, unbookmark } from "../controller/tweetController.js";
+import { createTweet, deleteTweet, likeTweet, dislikeTweet } from "../controller/tweetController.js";
 const router = express.Router();
 
 //<--- TWEET CREATION FUNCTIONALITIES --->

@@ -46,6 +46,35 @@ const createTweet = (req, res) => {
     });
 };
 
+// const checkType = (req) =>{
+//       const {type,derivedTweetId,derivedUserId} = req.body;
+
+//       switch (type) {
+//         case 2:
+//           Tweet.findOne(
+//             { "tweets.userId": derivedUserId, "tweets._id": derivedTweetId },
+//             { "tweets.$": 1 }
+//           )
+//             .then((tweet) => {
+//               if (tweet && tweet.tweets.length > 0) {
+//                 const threadId = tweet.tweets[0].threadId;
+//                 console.log(threadId)
+//                 console.log("ThreadId:", threadId);
+//               } else {
+//                 console.log("Tweet not found");
+//               }
+//             })
+//             .catch((error) => {
+//               console.log("Error:", error);
+//             });
+
+//           break;
+      
+//         default:
+//           break;
+//       }
+// }
+
 // Delete Tweet
 const deleteTweet = (req, res) => {
   const { userId, objId } = req.body;
@@ -64,11 +93,10 @@ const deleteTweet = (req, res) => {
         }
       }
     }
-    );
-  };
-  
-//  <--- End of TWEET CREATION FUNCTIONS --->
+  );
+};
 
+//  <--- End of TWEET CREATION FUNCTIONS --->
 
 // <-- LIKE/DISLIKE FUNCTIONS -->
 
