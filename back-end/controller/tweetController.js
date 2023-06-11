@@ -1,5 +1,6 @@
 import Tweet from "../models/tweets.js";
 import Thread from "../models/threads.js";
+import User from "../models/users.js";
 
 //  <--- TWEET FUNCTIONS --->
 
@@ -65,6 +66,60 @@ const deleteTweet = (req, res) => {
     }
   );
 };
+
+// Like tweet
+const likeTweet = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+
+  Tweet.findOneAndUpdate(
+    { userId: tweetUserId, "tweets._id": tweetId },
+    { $push: { "tweets.$.likes": { userId: userId } } }
+  )
+    .then(() => {
+      User.findOneAndUpdate(
+        { uid: userId },
+        { $push: { liked: { userId: tweetUserId, tweetId } } }
+      )
+        .then(() => {
+          res.status(200).json({ message: "Tweet liked successfully" });
+        })
+        .catch((error) => {
+          res.status(500).json({ error: "Error updating user liked array" });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    });
+};
+
+// Dislike tweet
+const dislikeTweet = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+
+  Tweet.findOneAndUpdate(
+    { userId: tweetUserId, "tweets._id": tweetId },
+    { $pull: { "tweets.$.likes": { userId: userId } } }
+  )
+    .then(() => {
+      User.findOneAndUpdate(
+        { uid: userId },
+        { $pull: { liked: { userId: tweetUserId, tweetId } } }
+      )
+        .then(() => {
+          res.status(200).json({ message: "Tweet unliked successfully" });
+        })
+        .catch((error) => {
+          res.status(500).json({ error: "Error updating user liked array" });
+        });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: error.message });
+    });
+};
+
+
 //  <--- End of TWEET FUNCTIONS --->
 
-export { createTweet, deleteTweet };
+export { createTweet, deleteTweet, likeTweet, dislikeTweet };
