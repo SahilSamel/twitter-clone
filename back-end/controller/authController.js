@@ -34,26 +34,15 @@ const registerUser = (uid, userHandle) => {
   session
     .run("CREATE (:User {uid: $uid})", { uid }) // Create query for Neo4j Cypher
     .then((neo4jResult) => {
-      if (neo4jResult.records.length === 0) {
-        console.log("Node creation failed. No records returned.");
-        return;
-      }
+      newUser
+      .save()
+      .then(() => {
+        console.log("User saved successfully.");
+      })
+      .catch((error) => {
+        console.log("Error saving user:", error);
+      });
 
-      const summary = neo4jResult.summary;
-      if (summary.counters.nodesCreated() > 0) {
-        console.log("Node created successfully.");
-
-        newUser
-          .save()
-          .then(() => {
-            console.log("User saved successfully.");
-          })
-          .catch((error) => {
-            console.log("Error saving user:", error);
-          });
-      } else {
-        console.log("Node creation failed.");
-      }
     })
     .catch((error) => {
       console.log("Error creating node:", error);
