@@ -10,23 +10,24 @@ const createTweet = (req, res) => {
   const timestamp = new Date();
   const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId } =
     req.body;
-    
+
   const newThread = new Thread({ replies: [] });
 
-  newThread.save()
-  .then((savedThread) => {
-    const threadId = savedThread._id;
+  newThread
+    .save()
+    .then((savedThread) => {
+      const threadId = savedThread._id;
 
-    const newTweet = {
-      type: parseInt(type),
-      text: text || "",
-      mediaURL: mediaURL || "",
-      derivedUserId: derivedUserId || null,
-      derivedTweetId: derivedTweetId || null,
-      threadId: threadId || null,
-      timestamp: new Date(),
-      likes: [],
-    };
+      const newTweet = {
+        type: parseInt(type),
+        text: text || "",
+        mediaURL: mediaURL || "",
+        derivedUserId: derivedUserId || null,
+        derivedTweetId: derivedTweetId || null,
+        threadId: threadId || null,
+        timestamp: new Date(),
+        likes: [],
+      };
 
       Tweet.findOneAndUpdate(
         { userId },
@@ -34,15 +35,14 @@ const createTweet = (req, res) => {
         { new: true, upsert: true }
       )
         .then((updatedUser) => {
-          console.log("Updated user:", updatedUser);
+          res.status(201).json({ Message: updatedUser });
         })
         .catch((error) => {
-          console.error("Error updating user:", error);
+          res.status(403).json({ Error: error });
         });
-      
     })
     .catch((error) => {
-    console.error('Error creating thread:', error);
+      console.error("Error creating thread:", error);
     });
 };
 
@@ -58,9 +58,9 @@ const deleteTweet = (req, res) => {
         console.error(err);
       } else {
         if (result.modifiedCount > 0) {
-          res.status(201).json({ "Message": "Tweet Deleted Successfully" });
+          res.status(201).json({ Message: "Tweet Deleted Successfully" });
         } else {
-          res.status(201).json({ "Message": "No tweet found" });
+          res.status(201).json({ Message: "No tweet found" });
         }
       }
     }
@@ -119,7 +119,45 @@ const dislikeTweet = (req, res) => {
     });
 };
 
+const bookmark = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+
+  User.findOneAndUpdate(
+    { uid: userId },
+    { $push: { bookmarks: { userId: tweetUserId, tweetId } } }
+  )
+    .then(() => {
+      res.status(200).json({ message: "Tweet bookmarked successfully" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error while bookmarking tweet" });
+    });
+};
+
+const unbookmark = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+
+  User.findOneAndUpdate(
+    { uid: userId },
+    { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
+  )
+    .then(() => {
+      res.status(200).json({ message: "Tweet unbookmarked successfully" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error while bookmarking tweet" });
+    });
+};
 
 //  <--- End of TWEET FUNCTIONS --->
 
-export { createTweet, deleteTweet, likeTweet, dislikeTweet };
+export {
+  createTweet,
+  deleteTweet,
+  likeTweet,
+  dislikeTweet,
+  bookmark,
+  unbookmark,
+};
