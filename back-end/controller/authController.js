@@ -51,7 +51,6 @@ const registerUser = (uid, userHandle) => {
       session.close(); // Close the Neo4j session
     });
 };
-//
 
 // Creating new User entry
 const createUser = (req, res) => {

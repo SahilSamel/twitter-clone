@@ -3,14 +3,12 @@ import User from "../models/users.js";
 import admin from "firebase-admin";
 import driver from "../connections/neo4j.js";
 import serviceAccount from "../connections/firebaseAdmin.js";
-const session = driver.session(); //neo4j session creation
 
 // <-- Firebase admin SDK Initialization-->
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 // <-- End of Firebase admin SDK Initialization-->
-
 
 // <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
@@ -39,6 +37,8 @@ const updateBio = (req, res) => {
 //Deleting user
 const deleteUser = async (req, res) => {
   const uid = req.userId.id;
+  const session = driver.session(); // Assuming you have the Neo4j driver instance available
+
   try {
     await User.deleteOne({ uid });
     await Tweet.deleteOne({ uid });
@@ -53,6 +53,7 @@ const deleteUser = async (req, res) => {
 
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
+    session.close();
     res.status(500).json({ error: "Error deleting user" });
   }
 };
