@@ -12,6 +12,43 @@ admin.initializeApp({
 
 // <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
+//Update Location
+const updateLocation = (req, res) => {
+  const uid = req.userId.id;
+  const { location } = req.body;
+
+  User.findOneAndUpdate({ uid }, { location }, { new: true })
+    .then((updatedUser) => {
+      if (updatedUser) {
+        res.status(200).json({ message: "Location updated successfully" });
+      } else {
+        res.status(404).json({ error: "User not found" });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error updating location" });
+    });
+};
+
+//Update Birth Date
+const updateBirthdate = (req, res) => {
+  const uid = req.userId.id;
+  const { birthdate } = req.body;
+
+  User.findOneAndUpdate({ uid }, { birthdate }, { new: true })
+    .then((updatedUser) => {
+      if (updatedUser) {
+        res.status(200).json({ message: "Birthdate updated successfully" });
+      } else {
+        res.status(404).json({ error: "User not found" });
+      }
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error updating birthdate" });
+    });
+};
+
+
 //Update Bio
 const updateBio = (req, res) => {
   const uid = req.userId.id;
@@ -60,4 +97,4 @@ const deleteUser = async (req, res) => {
 
 // <-- End of DELETE USER FUNCTION -->
 
-export { deleteUser, updateBio };
+export { deleteUser, updateBio, updateLocation, updateBirthdate };

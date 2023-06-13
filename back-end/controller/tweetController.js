@@ -1,49 +1,54 @@
 import Tweet from "../models/tweets.js";
 import Thread from "../models/threads.js";
 import User from "../models/users.js";
+import mongoose from "mongoose";
 
 //  <--- TWEET CREATION FUNCTIONS --->
 
 //  Create a new Tweet
 const createTweet = (req, res) => {
-  const userId = req.userId.id;
-  const timestamp = new Date();
-  const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId } =
-    req.body;
+  return new Promise((resolve, reject) => {
+    const userId = req.userId.id;
+    const timestamp = new Date();
+    const { type, text, mediaURL, derivedUserId, derivedTweetId } = req.body;
+    const newThread = new Thread({ replies: [] });
 
-  const newThread = new Thread({ replies: [] });
+    newThread
+      .save()
+      .then((savedThread) => {
+        const threadId = savedThread._id;
 
-  newThread
-    .save()
-    .then((savedThread) => {
-      const threadId = savedThread._id;
+        const newTweet = {
+          type: parseInt(type),
+          text: text || "",
+          mediaURL: mediaURL || "",
+          derivedUserId: derivedUserId || null,
+          derivedTweetId: derivedTweetId || null,
+          threadId: threadId || null,
+          timestamp: new Date(),
+          likes: [],
+        };
 
-      const newTweet = {
-        type: parseInt(type),
-        text: text || "",
-        mediaURL: mediaURL || "",
-        derivedUserId: derivedUserId || null,
-        derivedTweetId: derivedTweetId || null,
-        threadId: threadId || null,
-        timestamp: new Date(),
-        likes: [],
-      };
-
-      Tweet.findOneAndUpdate(
-        { userId },
-        { $push: { tweets: newTweet } },
-        { new: true, upsert: true }
-      )
-        .then((updatedUser) => {
-          res.status(201).json({ Message: updatedUser });
-        })
-        .catch((error) => {
-          res.status(403).json({ Error: error });
-        });
-    })
-    .catch((error) => {
-      console.error("Error creating thread:", error);
-    });
+        Tweet.findOneAndUpdate(
+          { userId },
+          { $push: { tweets: newTweet } },
+          { new: true, upsert: true }
+        )
+          .then((updatedUser) => {
+            resolve({
+              replytweetId:
+                updatedUser.tweets[updatedUser.tweets.length - 1]._id,
+              replythreadId: threadId,
+            });
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
 };
 
 // const checkType = (req) =>{
@@ -69,7 +74,7 @@ const createTweet = (req, res) => {
 //             });
 
 //           break;
-      
+
 //         default:
 //           break;
 //       }
@@ -94,6 +99,44 @@ const deleteTweet = (req, res) => {
       }
     }
   );
+};
+
+//Create reply
+const createReply = (req, res) => {
+  const replyUserId = req.userId.id;
+  const { type, text, mediaURL, derivedUserId, derivedTweetId, tweetThreadId } =
+    req.body;
+
+  try {
+    createTweet(req, res)
+      .then(({ replytweetId, replythreadId }) => {
+        console.log(replytweetId, replythreadId);
+        const newReply = {
+          userId: replyUserId,
+          tweetId: replytweetId,
+          threadId: replythreadId,
+        };
+
+        Thread.findByIdAndUpdate(
+          tweetThreadId,
+          { $push: { replies: newReply } },
+          { new: true }
+        )
+          .then((updatedThread) => {
+            res.status(201).json({ Message: updatedThread });
+          })
+          .catch((error) => {
+            console.error("Error updating thread:", error);
+            res.status(500).json({ Error: "Failed to update thread" });
+          });
+      })
+      .catch((error) => {
+        console.error("Error creating tweet:", error);
+      });
+  } catch (error) {
+    console.error("Error creating reply:", error);
+    res.status(403).json({ Error: error });
+  }
 };
 
 //  <--- End of TWEET CREATION FUNCTIONS --->
@@ -154,4 +197,4 @@ const dislikeTweet = (req, res) => {
 
 // <-- End of LIKE/DISLIKE FUNCTIONS -->
 
-export { createTweet, deleteTweet, likeTweet, dislikeTweet };
+export { createTweet, deleteTweet, createReply, likeTweet, dislikeTweet };

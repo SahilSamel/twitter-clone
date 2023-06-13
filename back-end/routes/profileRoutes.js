@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { deleteUser, updateBio } from "../controller/profileController.js";
+import { deleteUser, updateBio, updateLocation, updateBirthdate } from "../controller/profileController.js";
 const router = express.Router();
 
 //<--- PROFILE UPDATE FUNCTIONALITIES --->
@@ -8,6 +8,16 @@ const router = express.Router();
 //Update bio
 router.post("/updateBio", verifyToken, (req, res) => {
     updateBio(req, res);
+});
+
+//Update Location
+router.post("/updateLocation", verifyToken, (req, res) => {
+    updateLocation(req, res);
+});
+
+//Update Birth Date
+router.post("/updateBirthdate", verifyToken, (req, res) => {
+    updateBirthdate(req, res);
 });
 
 //<--- End of PROFILE UPDATE FUNCTIONALITIES --->

@@ -7,7 +7,7 @@ const tweetsSchema = new mongoose.Schema({
         type: { type: Number, default: 0, enum: [0, 1, 2, 3] }, 
         text: { type: String },
         mediaURL: { type: String },
-        derivedUserId: { type: mongoose.Schema.Types.ObjectId },
+        derivedUserId: { type:String },
         derivedTweetId: { type: mongoose.Schema.Types.ObjectId },
         threadId: { type: mongoose.Schema.Types.ObjectId },
         timestamp: { type: Date, required: true },
