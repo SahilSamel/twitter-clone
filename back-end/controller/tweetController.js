@@ -51,6 +51,33 @@ const createTweet = (req, res) => {
   });
 };
 
+//Delete Reply
+const deleteReply = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetId } = req.body;
+
+  Tweet.findOneAndUpdate(
+    { userId, "tweets._id": tweetId },
+    {
+      $set: {
+        "tweets.$.text": null,
+        "tweets.$.likes": [],
+      },
+    }
+  )
+    .then((result) => {
+      if (result) {
+        res.status(201).json({ Message: "Reply deleted successfully" });
+      } else {
+        res.status(404).json({ Message: "Reply not found" });
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting reply:", error);
+      res.status(500).json({ Error: "Failed to delete reply" });
+    });
+};
+
 // const checkType = (req) =>{
 //       const {type,derivedTweetId,derivedUserId} = req.body;
 
@@ -82,19 +109,21 @@ const createTweet = (req, res) => {
 
 // Delete Tweet
 const deleteTweet = (req, res) => {
-  const { userId, objId } = req.body;
+  const userId = req.userId.id;
+  const { objId } = req.body;
 
   Tweet.updateOne(
     { userId: userId, "tweets._id": objId },
-    { $pull: { tweets: { _id: objId } } },
+    { $set: { "tweets.$.text": "" } },
     (err, result) => {
       if (err) {
         console.error(err);
+        res.status(500).json({ Error: "Failed to delete tweet" });
       } else {
-        if (result.modifiedCount > 0) {
-          res.status(201).json({ Message: "Tweet Deleted Successfully" });
+        if (result.nModified > 0) {
+          res.status(201).json({ Message: "Tweet text cleared successfully" });
         } else {
-          res.status(201).json({ Message: "No tweet found" });
+          res.status(404).json({ Message: "Tweet not found" });
         }
       }
     }
@@ -110,7 +139,6 @@ const createReply = (req, res) => {
   try {
     createTweet(req, res)
       .then(({ replytweetId, replythreadId }) => {
-        console.log(replytweetId, replythreadId);
         const newReply = {
           userId: replyUserId,
           tweetId: replytweetId,
@@ -197,4 +225,4 @@ const dislikeTweet = (req, res) => {
 
 // <-- End of LIKE/DISLIKE FUNCTIONS -->
 
-export { createTweet, deleteTweet, createReply, likeTweet, dislikeTweet };
+export { createTweet, deleteTweet, createReply, deleteReply, likeTweet, dislikeTweet };

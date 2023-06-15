@@ -1,9 +1,9 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { createTweet, deleteTweet, createReply, likeTweet, dislikeTweet } from "../controller/tweetController.js";
+import { createTweet, deleteTweet, createReply, deleteReply, likeTweet, dislikeTweet } from "../controller/tweetController.js";
 const router = express.Router();
 
-//<--- TWEET CREATION FUNCTIONALITIES --->
+//<--- TWEET CREATION/DELETION FUNCTIONALITIES --->
 
 //Create Tweet
 router.post("/tweet", verifyToken, (req, res) => {
@@ -18,6 +18,11 @@ router.post("/delete", verifyToken, (req, res) => {
 //Create Reply Tweet
 router.post("/reply", verifyToken, (req, res) => {
   createReply(req, res);
+});
+
+//Delete Reply Tweet
+router.post("/deleteReply", verifyToken, (req, res) => {
+  deleteReply(req, res);
 });
 
 //<--- End of TWEET CREATION FUNCTIONALITIES --->
