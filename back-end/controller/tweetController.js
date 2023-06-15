@@ -51,33 +51,6 @@ const createTweet = (req, res) => {
   });
 };
 
-//Delete Reply
-const deleteReply = (req, res) => {
-  const userId = req.userId.id;
-  const { tweetId } = req.body;
-
-  Tweet.findOneAndUpdate(
-    { userId, "tweets._id": tweetId },
-    {
-      $set: {
-        "tweets.$.text": null,
-        "tweets.$.likes": [],
-      },
-    }
-  )
-    .then((result) => {
-      if (result) {
-        res.status(201).json({ Message: "Reply deleted successfully" });
-      } else {
-        res.status(404).json({ Message: "Reply not found" });
-      }
-    })
-    .catch((error) => {
-      console.error("Error deleting reply:", error);
-      res.status(500).json({ Error: "Failed to delete reply" });
-    });
-};
-
 // const checkType = (req) =>{
 //       const {type,derivedTweetId,derivedUserId} = req.body;
 
@@ -167,6 +140,32 @@ const createReply = (req, res) => {
   }
 };
 
+//Delete Reply
+const deleteReply = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetId } = req.body;
+
+  Tweet.findOneAndUpdate(
+    { userId, "tweets._id": tweetId },
+    {
+      $set: {
+        "tweets.$.text": null,
+        "tweets.$.likes": [],
+      },
+    }
+  )
+    .then((result) => {
+      if (result) {
+        res.status(201).json({ Message: "Reply deleted successfully" });
+      } else {
+        res.status(404).json({ Message: "Reply not found" });
+      }
+    })
+    .catch((error) => {
+      console.error("Error deleting reply:", error);
+      res.status(500).json({ Error: "Failed to delete reply" });
+    });
+};
 //  <--- End of TWEET CREATION FUNCTIONS --->
 
 // <-- LIKE/DISLIKE FUNCTIONS -->

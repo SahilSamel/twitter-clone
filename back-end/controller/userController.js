@@ -1,6 +1,14 @@
 import User from "../models/users.js";
 import driver from "../connections/neo4j.js";
 
+
+// <-- SCROLL DOWN CACHE FUNCTION -->
+const scrolldownupdate = (req,res) => {
+  const userId = req.userId.id;
+  const {lastTimestamp} = req.body;
+}
+// <-- End of SCROLL DOWN CACHE FUNCTION -->
+
 // <-- FOLLOW/UNFOLLO FUNCTIONS -->
 
 //Follow
