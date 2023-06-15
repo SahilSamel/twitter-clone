@@ -1,15 +1,70 @@
 import User from "../models/users.js";
 import driver from "../connections/neo4j.js";
 
-
 // <-- SCROLL DOWN CACHE FUNCTION -->
-const scrolldownupdate = (req,res) => {
+const scrolldownupdate = (req, res) => {
   const userId = req.userId.id;
-  const {lastTimestamp} = req.body;
-}
+  const { lastTimestamp } = req.body;
+
+  const followingUserIds = getFollowingUserIds(userId);
+
+  Tweet.find({ userId: { $in: followingUserIds } })
+    .sort({ "tweets.timestamp": -1 })
+    .limit(50)
+    .then((tweets) => {
+      const filteredTweets = tweets.reduce((filtered, tweet) => {
+        const filteredSubTweets = tweet.tweets.filter(
+          (subTweet) => subTweet.timestamp < lastTimestamp
+        );
+        filtered.push(
+          ...filteredSubTweets.map((subTweet) => ({
+            userId: tweet.userId,
+            tweetId: subTweet._id,
+          }))
+        );
+        return filtered;
+      }, []);
+
+      const sortedTweets = filteredTweets.sort((a, b) => {
+        const likesDiff = b.likes.length - a.likes.length;
+        if (likesDiff !== 0) {
+          return likesDiff;
+        }
+        return b.timestamp - a.timestamp;
+      });
+
+      const top50Tweets = sortedTweets.slice(0, 50);
+
+      const scrolldownCache = top50Tweets.map((tweet) => ({
+        userId: tweet.userId,
+        tweetId: tweet.tweetId,
+      }));
+
+      User.findByIdAndUpdate(
+        userId,
+        { $set: { scrolldownCache: scrolldownCache } },
+        { new: true }
+      )
+        .then((updatedUser) => {
+          res.status(200).json({
+            Message: "Scroll down cache updated successfully",
+            User: updatedUser,
+          });
+        })
+        .catch((error) => {
+          console.error("Error updating user:", error);
+          res.status(500).json({ Error: "Failed to update scroll down cache" });
+        });
+    })
+    .catch((error) => {
+      console.error("Error retrieving tweets:", error);
+      res.status(500).json({ Error: "Failed to retrieve tweets" });
+    });
+};
+
 // <-- End of SCROLL DOWN CACHE FUNCTION -->
 
-// <-- FOLLOW/UNFOLLO FUNCTIONS -->
+// <-- FOLLOW/UNFOLLOW FUNCTIONS -->
 
 //Follow
 const follow = async (req, res) => {
@@ -44,6 +99,35 @@ const follow = async (req, res) => {
     session.close();
     res.status(500).json({ error: "Error updating follower's followeesCount" });
   }
+};
+
+//Get Following
+const getFollowingUserIds = (userId) => {
+  const session = driver.session();
+
+  const query = `
+    MATCH (u:User)-[:FOLLOWS]->(followedUser:User)
+    WHERE u.userId = $userId
+    RETURN followedUser.userId AS followingUserId
+  `;
+
+  const params = { userId };
+
+  return session
+    .run(query, params)
+    .then((result) => {
+      const followingUserIds = result.records.map((record) =>
+        record.get("followingUserId")
+      );
+      return followingUserIds;
+    })
+    .catch((error) => {
+      console.error("Error retrieving following user ids:", error);
+      throw error;
+    })
+    .finally(() => {
+      session.close();
+    });
 };
 
 //Unfollow
@@ -81,7 +165,7 @@ const unfollow = async (req, res) => {
   }
 };
 
-// <-- End of FOLLOW/UNFOLLO FUNCTIONS -->
+// <-- End of FOLLOW/UNFOLLOW FUNCTIONS -->
 
 // <-- BOOKMARKING FUNCTIONS -->
 
@@ -120,4 +204,4 @@ const unbookmark = (req, res) => {
 };
 
 // <-- End of BOOKMARKING FUNCTIONS -->
-export { follow, unfollow, bookmark, unbookmark };
+export { scrolldownupdate, follow, unfollow, bookmark, unbookmark };
