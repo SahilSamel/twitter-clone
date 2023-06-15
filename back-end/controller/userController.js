@@ -20,20 +20,15 @@ const scrolldownupdate = (req, res) => {
           ...filteredSubTweets.map((subTweet) => ({
             userId: tweet.userId,
             tweetId: subTweet._id,
+            timestamp: subTweet.timestamp
           }))
         );
         return filtered;
       }, []);
 
-      const sortedTweets = filteredTweets.sort((a, b) => {
-        const likesDiff = b.likes.length - a.likes.length;
-        if (likesDiff !== 0) {
-          return likesDiff;
-        }
-        return b.timestamp - a.timestamp;
-      });
-
-      const top50Tweets = sortedTweets.slice(0, 50);
+      top50Tweets.sort((a, b) => b.timestamp - a.timestamp);
+      
+      const top50Tweets = filteredTweets.slice(0, 50);
 
       const scrolldownCache = top50Tweets.map((tweet) => ({
         userId: tweet.userId,
