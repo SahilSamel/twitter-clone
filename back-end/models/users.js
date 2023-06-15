@@ -6,7 +6,13 @@ const usersSchema = new mongoose.Schema({
   userHandle: {type: String, required:true},
   followersCount: { type: Number, default: 0 },
   followeesCount: { type: Number, default: 0 },
-  feedCache: [
+  refreshCache: [
+    {
+      userId: { type: String, required: true },
+      tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
+    }
+  ],
+  scrolldownCache: [
     {
       userId: { type: String, required: true },
       tweetId: { type: mongoose.Schema.Types.ObjectId, required: true }
