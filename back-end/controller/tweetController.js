@@ -1,7 +1,6 @@
 import Tweet from "../models/tweets.js";
 import Thread from "../models/threads.js";
 import User from "../models/users.js";
-import mongoose from "mongoose";
 
 //  <--- TWEET CREATION FUNCTIONS --->
 
@@ -62,34 +61,6 @@ const createTweet = (req, res) => {
   });
 };
 
-// const checkType = (req) =>{
-//       const {type,derivedTweetId,derivedUserId} = req.body;
-
-//       switch (type) {
-//         case 2:
-//           Tweet.findOne(
-//             { "tweets.userId": derivedUserId, "tweets._id": derivedTweetId },
-//             { "tweets.$": 1 }
-//           )
-//             .then((tweet) => {
-//               if (tweet && tweet.tweets.length > 0) {
-//                 const threadId = tweet.tweets[0].threadId;
-//                 console.log(threadId)
-//                 console.log("ThreadId:", threadId);
-//               } else {
-//                 console.log("Tweet not found");
-//               }
-//             })
-//             .catch((error) => {
-//               console.log("Error:", error);
-//             });
-
-//           break;
-
-//         default:
-//           break;
-//       }
-// }
 
 // Delete Tweet
 const deleteTweet = (req, res) => {
@@ -177,6 +148,7 @@ const deleteReply = (req, res) => {
       res.status(500).json({ Error: "Failed to delete reply" });
     });
 };
+
 //  <--- End of TWEET CREATION FUNCTIONS --->
 
 // <-- LIKE/DISLIKE FUNCTIONS -->
