@@ -9,7 +9,6 @@ import mongoose from "mongoose";
 const createTweet = (req, res) => {
   return new Promise((resolve, reject) => {
     const userId = req.userId.id;
-    const timestamp = new Date();
     const { type, text, mediaURL, derivedUserId, derivedTweetId } = req.body;
     const newThread = new Thread({ replies: [] });
 
@@ -31,15 +30,27 @@ const createTweet = (req, res) => {
 
         Tweet.findOneAndUpdate(
           { userId },
-          { $push: { tweets: newTweet } },
+          {
+            $push: {
+              tweets: {
+                $each: [newTweet],
+                $position: 0
+              }
+            },
+            
+            $set: { latestTweetTimestamp: new Date() } 
+          },
           { new: true, upsert: true }
         )
           .then((updatedUser) => {
-            resolve({
-              replytweetId:
-                updatedUser.tweets[updatedUser.tweets.length - 1]._id,
-              replythreadId: threadId,
-            });
+            resolve(
+              {
+                replytweetId:
+                  updatedUser.tweets[updatedUser.tweets.length - 1]._id,
+                replythreadId: threadId,
+              },
+              res.status(201).json({ Message: "Tweet Created" })
+            );
           })
           .catch((error) => {
             reject(error);
@@ -224,4 +235,11 @@ const dislikeTweet = (req, res) => {
 
 // <-- End of LIKE/DISLIKE FUNCTIONS -->
 
-export { createTweet, deleteTweet, createReply, deleteReply, likeTweet, dislikeTweet };
+export {
+  createTweet,
+  deleteTweet,
+  createReply,
+  deleteReply,
+  likeTweet,
+  dislikeTweet,
+};

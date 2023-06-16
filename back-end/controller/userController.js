@@ -1,68 +1,86 @@
 import User from "../models/users.js";
 import driver from "../connections/neo4j.js";
+import Tweet from "../models/tweets.js";
 
-// <-- SCROLL DOWN CACHE FUNCTION -->
-const scrolldownupdate = (req, res) => {
+// <-- UPDATE CACHE FUNCTION -->
+
+const updateCache = (req, res, cacheType) => {
   const userId = req.userId.id;
   const { lastTimestamp } = req.body;
 
-  const followingUserIds = getFollowingUserIds(userId);
+  const timestamp = new Date(lastTimestamp);
 
-  Tweet.find({ userId: { $in: followingUserIds } })
-    .sort({ "tweets.timestamp": -1 })
-    .limit(50)
-    .then((tweets) => {
-      const filteredTweets = tweets.reduce((filtered, tweet) => {
-        const filteredSubTweets = tweet.tweets.filter(
-          (subTweet) => subTweet.timestamp < lastTimestamp
-        );
-        filtered.push(
-          ...filteredSubTweets.map((subTweet) => ({
-            userId: tweet.userId,
-            tweetId: subTweet._id,
-          }))
-        );
-        return filtered;
-      }, []);
+  const filteredTweets = [];
 
-      const sortedTweets = filteredTweets.sort((a, b) => {
-        const likesDiff = b.likes.length - a.likes.length;
-        if (likesDiff !== 0) {
-          return likesDiff;
-        }
-        return b.timestamp - a.timestamp;
-      });
+  getFollowingUserIds(userId)
+    .then((followingUserIds) => {
+      // Get all the tweets from the users {userId} follows
+      Tweet.find({ userId: { $in: followingUserIds } })
+        .then((tweets) => {
+          tweets.map((tweets) => {
+            tweets.tweets.map((item) => {
+              const tweetTimestamp = new Date(item.timestamp);
 
-      const top50Tweets = sortedTweets.slice(0, 50);
-
-      const scrolldownCache = top50Tweets.map((tweet) => ({
-        userId: tweet.userId,
-        tweetId: tweet.tweetId,
-      }));
-
-      User.findByIdAndUpdate(
-        userId,
-        { $set: { scrolldownCache: scrolldownCache } },
-        { new: true }
-      )
-        .then((updatedUser) => {
-          res.status(200).json({
-            Message: "Scroll down cache updated successfully",
-            User: updatedUser,
+              if (
+                (cacheType === "scrolldown" && tweetTimestamp < timestamp) ||
+                (cacheType === "refresh" && tweetTimestamp > timestamp)
+              ) {
+                filteredTweets.push({
+                  userId: tweets.userId,
+                  text: item.text,
+                  tweetId: item._id,
+                  timestamp: item.timestamp,
+                });
+              }
+            });
           });
+
+          filteredTweets.sort((a, b) => b.timestamp - a.timestamp);
+
+          const sortedTweets = filteredTweets.slice(0, 50);
+          console.log(sortedTweets);
+
+          const updateField =
+            cacheType === "scrolldown" ? "scrolldownCache" : "refreshCache";
+
+          User.findOneAndUpdate(
+            { uid: userId },
+            { $set: { [updateField]: sortedTweets } },
+            { new: true }
+          )
+            .then((updatedUser) => {
+              const message =
+                cacheType === "scrolldown"
+                  ? "ScrollDown cache updated successfully"
+                  : "Refresh cache updated successfully";
+
+              res.status(200).json({
+                Message: message,
+                User: updatedUser,
+              });
+            })
+            .catch((error) => {
+              console.error("Error updating user:", error);
+              const errorMessage =
+                cacheType === "scrolldown"
+                  ? "Failed to update ScrollDown cache"
+                  : "Failed to update Refresh cache";
+
+              res.status(500).json({ Error: errorMessage });
+            });
         })
         .catch((error) => {
-          console.error("Error updating user:", error);
-          res.status(500).json({ Error: "Failed to update scroll down cache" });
+          console.error("Error retrieving tweets:", error);
+          res.status(500).json({ Error: "Failed to retrieve tweets" });
         });
     })
     .catch((error) => {
-      console.error("Error retrieving tweets:", error);
-      res.status(500).json({ Error: "Failed to retrieve tweets" });
+      console.error("Error retrieving following user IDs:", error);
+      res.status(500).json({ Error: "Failed to retrieve following user IDs" });
     });
 };
 
-// <-- End of SCROLL DOWN CACHE FUNCTION -->
+// <-- End of UPDATE CACHE FUNCTION -->
 
 // <-- FOLLOW/UNFOLLOW FUNCTIONS -->
 
@@ -103,31 +121,33 @@ const follow = async (req, res) => {
 
 //Get Following
 const getFollowingUserIds = (userId) => {
-  const session = driver.session();
+  return new Promise((resolve, reject) => {
+    const session = driver.session();
 
-  const query = `
-    MATCH (u:User)-[:FOLLOWS]->(followedUser:User)
-    WHERE u.userId = $userId
-    RETURN followedUser.userId AS followingUserId
-  `;
+    const query = `
+      MATCH (start:User)-[:FOLLOWS]->(end:User)
+      WHERE start.uid = $userId
+      RETURN end.uid AS followingUserId
+    `;
 
-  const params = { userId };
+    const params = { userId };
 
-  return session
-    .run(query, params)
-    .then((result) => {
-      const followingUserIds = result.records.map((record) =>
-        record.get("followingUserId")
-      );
-      return followingUserIds;
-    })
-    .catch((error) => {
-      console.error("Error retrieving following user ids:", error);
-      throw error;
-    })
-    .finally(() => {
-      session.close();
-    });
+    session
+      .run(query, params)
+      .then((result) => {
+        const followingUserIds = result.records.map((record) =>
+          record.get("followingUserId")
+        );
+        resolve(followingUserIds);
+      })
+      .catch((error) => {
+        console.error("Error retrieving following user IDs:", error);
+        reject(error);
+      })
+      .finally(() => {
+        session.close();
+      });
+  });
 };
 
 //Unfollow
@@ -204,4 +224,13 @@ const unbookmark = (req, res) => {
 };
 
 // <-- End of BOOKMARKING FUNCTIONS -->
-export { scrolldownupdate, follow, unfollow, bookmark, unbookmark };
+export {
+  follow,
+  unfollow,
+  bookmark,
+  unbookmark,
+  getFollowingUserIds,
+  refreshCache,
+  scrolldownCache,
+  updateCache,
+};
