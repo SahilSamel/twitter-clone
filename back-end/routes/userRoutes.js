@@ -5,9 +5,6 @@ import {
   unfollow,
   bookmark,
   unbookmark,
-  getFollowingUserIds,
-  refreshCache,
-  scrolldownCache,
   updateCache
 } from "../controller/userController.js";
 const router = express.Router();
@@ -40,14 +37,12 @@ router.post("/unbookmark", verifyToken, (req, res) => {
 
 // <-- End of BOOKMARKING FUNCTIONALITIES -->
 
-router.get("/getfollow", verifyToken, (req, res) => {
-  getFollowingUserIds(req.userId.id,res);
-});
-
+//Update Refresh Cache
 router.post("/refresh", verifyToken, (req, res) => {
   updateCache(req, res, "refresh");
 });
 
+//Update Scroll Down Cache
 router.post("/scrolldown", verifyToken, (req, res) => {
   updateCache(req, res, "scrolldown");
 });
