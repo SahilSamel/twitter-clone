@@ -1,4 +1,5 @@
 import { useForm, SubmitHandler } from "react-hook-form";
+import authpost from "@/api/authpost"
 
 type Inputs = {
   email: string;
@@ -13,7 +14,20 @@ export default function SignUp() {
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    authpost(
+        '/signup',
+        data,
+        function(err: any,data: any){
+            if(err){
+                console.log(err);
+            }else{
+                console.log(data);
+            }
+        }
+    )
+  };
 
   console.log(watch("email"));
   return (
