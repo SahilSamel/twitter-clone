@@ -16,20 +16,21 @@ export default function SignUp() {
   } = useForm<Inputs>();
   
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const jsonData = JSON.stringify(data);
+    console.log(data);
     authpost(
-        '/signup',
-        data,
+        '/auth/signup',
+        jsonData,
         function(err: any,data: any){
             if(err){
                 console.log(err);
             }else{
-                console.log(data);
+                console.log(jsonData);
             }
         }
     )
   };
 
-  console.log(watch("email"));
   return (
     <form className="flex justify-center flex-col" onSubmit={handleSubmit(onSubmit)}>
       <input placeholder="Enter Email" className="my-5" {...register("email", { required: true })} />
