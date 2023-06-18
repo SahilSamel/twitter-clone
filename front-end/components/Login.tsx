@@ -1,5 +1,5 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios from "axios";
+import authpost from "@/api/authpost"
 
 type Inputs = {
   email: string;
@@ -14,13 +14,20 @@ const Login = () => {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    try {
-      const response = await axios.post("http://localhost:6969/signin", data);
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const jsonData = JSON.stringify(data);
+    console.log(data);
+    authpost(
+        '/auth/signIn',
+        jsonData,
+        function(err: any,data: any){
+            if(err){
+                console.log(err);
+            }else{
+                console.log(data);
+            }
+        }
+    )
   };
 
   return (

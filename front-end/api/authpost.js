@@ -2,7 +2,6 @@ import axios from "axios";
 import {serverUrl} from "@/constants/appConstant"
 
 const authpost = async (endpoint, data, func) => {
-  console.log(endpoint, data);
   try {
     const response = await axios.post(serverUrl + endpoint, data, {
       headers: {
