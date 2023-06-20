@@ -1,15 +1,12 @@
-import { useSelector } from "react-redux";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import Layout from '@/layouts/mainLayout';
 
+const Home = () => {
+  const tokenFromState = useSelector((state:any) => state.auth.token);
+  return (
+    <Layout />
+  );
+};
 
-const home = () => {
-    const token = useSelector((state:any) => state.auth.token);
-
-
-    return (
-        <div>
-            {token}
-        </div>
-    );
-}
-
-export default home;
+export default Home;

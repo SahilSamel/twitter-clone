@@ -12,9 +12,9 @@ import User from "../models/users.js";
 
 dotenv.config();
 
-//<-- USER AUTHENTICATION FUNCTIONS -->
+// <-- USER AUTHENTICATION FUNCTIONS -->
 
-//Database Queries for Authentication
+// Database Queries for Authentication
 const checkHandle = (userHandle) => {
   return User.findOne({ userHandle: userHandle }).then((user) => {
     if (user) {
@@ -23,26 +23,25 @@ const checkHandle = (userHandle) => {
   });
 };
 
-//Database Entry for User
+// Database Entry for User
 const registerUser = (uid, userHandle) => {
   const newUser = new User({
     uid,
     userHandle,
   });
-  const session = driver.session(); //neo4j session creation
+  const session = driver.session(); // neo4j session creation
 
   session
     .run("CREATE (:User {uid: $uid})", { uid }) // Create query for Neo4j Cypher
     .then((neo4jResult) => {
       newUser
-      .save()
-      .then(() => {
-        console.log("User saved successfully.");
-      })
-      .catch((error) => {
-        console.log("Error saving user:", error);
-      });
-
+        .save()
+        .then(() => {
+          console.log("User saved successfully.");
+        })
+        .catch((error) => {
+          console.log("Error saving user:", error);
+        });
     })
     .catch((error) => {
       console.log("Error creating node:", error);
@@ -57,17 +56,17 @@ const createUser = (req, res) => {
   const auth = getAuth();
   const { email, password, userHandle } = req.body;
 
-  checkHandle(userHandle) //First check for duplicate userhandle
+  checkHandle(userHandle) // First check for duplicate userhandle
     .then(() => {
-      return createUserWithEmailAndPassword(auth, email, password, userHandle); //Make firebase entry
+      return createUserWithEmailAndPassword(auth, email, password, userHandle); // Make firebase entry
     })
     .then((userCredential) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
 
-      registerUser(uid, userHandle); //Make mongo and neo4j entry
-      res.status(201).json({ token, uid }); //Pass auth token as response
+      registerUser(uid, userHandle); // Make mongo and neo4j entry
+      res.status(201).json({ token, uid }); // Pass auth token as response
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
@@ -88,9 +87,10 @@ const signIn = (req, res) => {
     .catch((error) => {
       const errorCode = error.code;
       const errorMessage = error.message;
+      res.status(401).json({ error: errorMessage });
     });
 };
 
-//<-- End of USER AUTHENTICATION FUNCTIONS -->
+// <-- End of USER AUTHENTICATION FUNCTIONS -->
 
 export { createUser, signIn };

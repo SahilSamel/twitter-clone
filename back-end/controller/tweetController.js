@@ -85,6 +85,32 @@ const deleteTweet = (req, res) => {
   );
 };
 
+//Fetch tweet
+const fetchTweet = (req, res) => {
+  const { userId, tweetId } = req.params;
+
+  // Assuming you are using a MongoDB database
+  Tweet.findOne({ userId }, (err, userTweet) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    if (!userTweet) {
+      return res.status(404).json({ error: 'Tweet not found' });
+    }
+
+    const tweet = userTweet.tweets.find((t) => t.tweetId === tweetId);
+
+    if (!tweet) {
+      return res.status(404).json({ error: 'Tweet not found' });
+    }
+
+    res.json(tweet);
+  });
+};
+
+
 //Create reply
 const createReply = (req, res) => {
   const replyUserId = req.userId.id;
