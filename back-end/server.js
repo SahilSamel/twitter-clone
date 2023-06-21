@@ -11,6 +11,7 @@ const app = express();
 // <-- End of Connections import -->
 
 // <-- Route Imports -->
+import getRoutes from './routes/getRoutes.js'
 import authRoutes from './routes/authRoutes.js';
 import tweetRoutes from './routes/tweetRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -31,6 +32,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // <-- End of Middleware -->
 
 // <-- Routes -->
+app.use('/', getRoutes);
 app.use("/auth", authRoutes);
 app.use("/compose", tweetRoutes);
 app.use("/profile", profileRoutes);

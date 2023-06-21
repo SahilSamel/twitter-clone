@@ -15,9 +15,6 @@ router.post("/delete", verifyToken, (req, res) => {
   deleteTweet(req, res);
 });
 
-router.get("/tweet", (req, res) => {
-  fetchTweet(req, res);
-});
 
 //Create Reply Tweet
 router.post("/reply", verifyToken, (req, res) => {

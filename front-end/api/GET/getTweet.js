@@ -1,18 +1,19 @@
 import axios from "axios";
-import {serverUrl} from "@/constants/appConstant"
+import { serverUrl } from "@/constants/appConstant";
 
 const getTweet = async (endpoint, data, func) => {
   try {
-    const response = await axios.get(serverUrl + endpoint, data, {
+    const response = await axios.get( serverUrl + endpoint, data, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
+    console.log(server + endpoint);
     const jsonData = response.data;
+    console.log(jsonData);
     func(null, jsonData);
   } catch (error) {
-    console.log(endpoint);
     func(error, '');
   }
 };

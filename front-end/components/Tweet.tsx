@@ -24,13 +24,15 @@ const Tweet: React.FC<TweetProps> = ({ userId, tweetId }) => {
 
   useEffect(() => {
     const fetchTweetData = () => {
+      console.log(userId,tweetId);
       getTweet(
-        "/tweet/${userId}/${tweetId}",
+        `/getTweet?userId=${userId}&tweetId=${tweetId}`,
         null,
         function (err: any, data: any) {
           if (err) {
-            console.log(err);
+            console.log(err, "error at axios");
           } else {
+            console.log(data);
             setTweetData(data);
           }
         }

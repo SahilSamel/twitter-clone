@@ -87,9 +87,8 @@ const deleteTweet = (req, res) => {
 
 //Fetch tweet
 const fetchTweet = (req, res) => {
-  const { userId, tweetId } = req.params;
+  const { userId, tweetId } = req.query;
 
-  // Assuming you are using a MongoDB database
   Tweet.findOne({ userId }, (err, userTweet) => {
     if (err) {
       console.log(err);
@@ -97,18 +96,19 @@ const fetchTweet = (req, res) => {
     }
 
     if (!userTweet) {
-      return res.status(404).json({ error: 'Tweet not found' });
+      return res.status(404).json({ error: 'User Not there' });
     }
 
-    const tweet = userTweet.tweets.find((t) => t.tweetId === tweetId);
-
+    const tweet = userTweet.tweets.id(tweetId); 
+    
     if (!tweet) {
-      return res.status(404).json({ error: 'Tweet not found' });
+      return res.status(404).json({ error: 'Tweet not in user' });
     }
-
+    console.log(tweet);
     res.json(tweet);
   });
 };
+
 
 
 //Create reply
@@ -236,6 +236,7 @@ const dislikeTweet = (req, res) => {
 export {
   createTweet,
   deleteTweet,
+  fetchTweet,
   createReply,
   deleteReply,
   likeTweet,
