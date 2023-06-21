@@ -7,7 +7,12 @@ type Inputs = {
   userHandle: string;
 };
 
-export default function SignUp() {
+
+type SignUpProps = {
+  toggleForm: () => void;
+};
+
+export default function SignUp({ toggleForm }: SignUpProps) {
   const {
     register,
     handleSubmit,
@@ -99,6 +104,15 @@ export default function SignUp() {
               type="submit"
             >
               Sign up
+            </button>
+          </div>
+          <div className="flex items-center justify-center mt-4">
+            <button
+              className="text-blue-500 hover:text-blue-700 text-sm font-semibold focus:outline-none"
+              type="button"
+              onClick={toggleForm}
+            >
+              Already have an account? Log in
             </button>
           </div>
         </form>

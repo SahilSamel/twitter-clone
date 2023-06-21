@@ -1,4 +1,7 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { clearToken } from '@/state/authStates';
+import { useRouter } from 'next/router';
 import {
   AiOutlineHome,
   AiOutlineUser,
@@ -13,7 +16,13 @@ import { useWindowSize } from '@/utils/Windowsize'; // Custom hook for getting w
 const Sidebar = () => {
   const { width } = useWindowSize(); // Get window width using custom hook
   const isMobile = width <= 768; // Define breakpoint for mobile screens
+  const dispatch = useDispatch();
+  const router = useRouter();
 
+  const handleLogout = () => {
+    dispatch(clearToken());
+    router.push('/');
+  };
   return (
     <div className="flex flex-col gap-2 justify-start items-start w-1/5 h-full p-6">
       <button
@@ -68,6 +77,7 @@ const Sidebar = () => {
         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
           isMobile ? 'text-xl' : 'text-lg'
         } hover:bg-blue-100 hover:text-blue-500`}
+        onClick={handleLogout}
       >
         <AiOutlineLogout />
         {!isMobile && <span>Account (Logout)</span>}

@@ -9,7 +9,11 @@ type Inputs = {
   password: string;
 };
 
-const Login = () => {
+type LoginProps = {
+  toggleForm: () => void;
+};
+
+const Login = ({ toggleForm }: LoginProps) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -26,8 +30,9 @@ const Login = () => {
         console.log(err);
       } else {
         const { token } = data;
+        console.log(token);
         dispatch(setToken(token));
-        router.push('/home');
+        router.push('/');
       }
     });
   };
@@ -67,6 +72,15 @@ const Login = () => {
               type="submit"
             >
               Log in
+            </button>
+          </div>
+          <div className="flex items-center justify-center mt-4">
+            <button
+              className="text-blue-500 hover:text-blue-700 text-sm font-semibold focus:outline-none"
+              type="button"
+              onClick={toggleForm}
+            >
+              Don't have an account? Sign up
             </button>
           </div>
         </form>
