@@ -7,6 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import authReducer from "../state/authStates";
 
 const persistConfig = {
+  timeout:500,
   key: 'root',
   storage,
 };
@@ -27,7 +28,7 @@ const store = configureStore({
 import React from "react";
 
 function MyApp({ Component, pageProps }) {
-  const persistor = persistStore(store, { timeout: 3600 }); // Increase timeout to 10 seconds
+  const persistor = persistStore(store, { timeout: 10000 }); // Increase timeout to 10 seconds
 
   return (
     <Provider store={store}>
