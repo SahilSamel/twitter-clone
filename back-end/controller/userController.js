@@ -165,7 +165,7 @@ const unbookmark = (req, res) => {
 // <-- End of BOOKMARKING FUNCTIONS -->
 
 
-// <-- UPDATE CACHE FUNCTION -->
+// <-- CACHE FUNCTION -->
 
 const updateCache = (req, res, cacheType) => {
   const userId = req.userId.id;
@@ -242,12 +242,46 @@ const updateCache = (req, res, cacheType) => {
     });
 };
 
-// <-- End of UPDATE CACHE FUNCTION -->
+// Get refreshCache
+const getRefreshCache = (req, res) => {
+  const userId = req.userId.id;
+
+  User.findOne({ uid: userId }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const refreshCache = user.refreshCache;
+    return res.json({ refreshCache });
+  });
+};
+
+
+//Get scroll down cache
+const getScrollDownCache = (req, res) => {
+  const userId = req.userId.id;
+
+  User.findOne({ uid: userId }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const scrollDownCache = user.scrolldownCache;
+    return res.json({ scrollDownCache });
+  });
+};
+// <-- End of CACHE FUNCTION -->
 
 
 export {
   follow,
   unfollow,
+  getRefreshCache, 
+  getScrollDownCache,
   bookmark,
   getBookmarks,
   unbookmark,
