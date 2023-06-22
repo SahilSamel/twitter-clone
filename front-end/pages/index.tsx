@@ -3,10 +3,12 @@ import { useSelector } from "react-redux";
 import Login from "@/components/Login";
 import Home from "@/pages/home";
 import SignUp from "@/components/SignUp";
+import { useRouter } from 'next/router';
 
 export default function Index() {
   const [showLogin, setShowLogin] = useState(true);
   const token = useSelector((state: any) => state.auth.token);
+  const router = useRouter();
 
   const toggleForm = () => {
     setShowLogin(!showLogin);
@@ -18,6 +20,6 @@ export default function Index() {
   }
 
   // User is logged in, render main content
-  return <Home />;
+  router.push('/home');
 }
 

@@ -19,12 +19,11 @@ interface TweetProps {
   tweetId: string;
 }
 
-const Tweet: React.FC<TweetProps> = ({ userId, tweetId }) => {
+const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
 
   useEffect(() => {
     const fetchTweetData = () => {
-      console.log(userId,tweetId);
       getTweet(
         `/getTweet?userId=${userId}&tweetId=${tweetId}`,
         null,

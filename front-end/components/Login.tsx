@@ -30,7 +30,6 @@ const Login = ({ toggleForm }: LoginProps) => {
         console.log(err);
       } else {
         const { token } = data;
-        console.log(token);
         dispatch(setToken(token));
         router.push('/');
       }

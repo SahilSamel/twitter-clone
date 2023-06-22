@@ -27,7 +27,7 @@ const store = configureStore({
 import React from "react";
 
 function MyApp({ Component, pageProps }) {
-  const persistor = persistStore(store, { timeout: 86400 }); // Increase timeout to 10 seconds
+  const persistor = persistStore(store, { timeout: 3600 }); // Increase timeout to 10 seconds
 
   return (
     <Provider store={store}>
