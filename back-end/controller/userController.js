@@ -129,6 +129,22 @@ const bookmark = (req, res) => {
     });
 };
 
+//Get Bookmarks
+const getBookmarks = (req, res) => {
+  const  userId  = req.userId.id;
+
+  User.findOne({ uid: userId }, (err, user) => {
+    if (err) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const bookmarks = user.bookmarks;
+    return res.json({ bookmarks });
+  });
+};
+
 //Delete a bookmark
 const unbookmark = (req, res) => {
   const userId = req.userId.id;
@@ -233,6 +249,7 @@ export {
   follow,
   unfollow,
   bookmark,
+  getBookmarks,
   unbookmark,
   getFollowingUserIds,
   updateCache,

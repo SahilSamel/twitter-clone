@@ -7,6 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import authReducer from "../state/authStates";
 
 const persistConfig = {
+  timeout:500,
   key: 'root',
   storage,
 };
