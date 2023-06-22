@@ -5,7 +5,7 @@ const getTweetList = async (endpoint, data, func) => {
   try {
     const response = await axios.get( serverUrl + endpoint, data, {
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
     });
 
