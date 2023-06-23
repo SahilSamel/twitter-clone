@@ -2,8 +2,7 @@ import { useDispatch } from 'react-redux';
 import { setToken } from '@/state/authStates';
 import { useRouter } from 'next/router';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import authpost from '@/api/authpost';
-
+import POST from '@/api/POST/POST';
 type Inputs = {
   email: string;
   password: string;
@@ -25,7 +24,7 @@ const Login = ({ toggleForm }: LoginProps) => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const jsonData = JSON.stringify(data);
-    authpost('/auth/signIn', jsonData, function (err: any, data: any) {
+    POST('/auth/signIn', jsonData, function (err: any, data: any) {
       if (err) {
         console.log(err);
       } else {

@@ -6,8 +6,8 @@ import {
   AiOutlineShake,
 } from "react-icons/ai";
 import axios from "axios";
-import getTweet from "@/api/GET/getTweet";
-
+import APIGET from "@/api/GET/APIGET";
+import { useSelector } from "react-redux";
 interface TweetData {
   text: string;
   userhandle: string;
@@ -21,25 +21,25 @@ interface TweetProps {
 
 const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
-
-  useEffect(() => {
-    const fetchTweetData = () => {
-      getTweet(
-        `/getTweet?userId=${userId}&tweetId=${tweetId}`,
-        null,
-        function (err: any, data: any) {
-          if (err) {
-            console.log(err, "error at axios");
-          } else {
-            console.log(data);
-            setTweetData(data);
-          }
+  const token = useSelector((state: any) => state.auth.token);
+  const fetchTweetData = () => {
+    APIGET(
+      `/getTweet?userId=${userId}&tweetId=${tweetId}`,
+      token,
+      function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          console.log(data);
+          setTweetData(data);
         }
-      );
-    };
+      }
+    );
+  };
 
-    fetchTweetData();
-  }, [userId, tweetId]);
+  // useEffect(() => {
+  //   fetchTweetData();
+  // }, [userId, tweetId]);
 
   if (!tweetData) {
     return <div>Loading...</div>;

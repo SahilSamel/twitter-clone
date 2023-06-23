@@ -21,6 +21,7 @@ router.get("/getScrollDownCache", verifyToken, (req, res) => {
 
 //Fetch Bookmarks
 router.get("/getBookmarks", verifyToken, (req, res) => {
+    console.log("ASDadniasndiadnaush")
     getBookmarks(req, res);
 });
 

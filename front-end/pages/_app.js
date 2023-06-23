@@ -1,14 +1,16 @@
 import "../styles/globals.css";
 import { configureStore } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { PersistGate } from 'redux-persist/integration/react';
+import { Provider, useSelector } from "react-redux";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { PersistGate } from "redux-persist/integration/react";
 import authReducer from "../state/authStates";
+import React from "react";
+import { useRouter } from "next/router";
 
 const persistConfig = {
-  timeout:500,
-  key: 'root',
+  timeout: 500,
+  key: "root",
   storage,
 };
 
@@ -24,9 +26,6 @@ const store = configureStore({
     }),
 });
 
-
-import React from "react";
-
 function MyApp({ Component, pageProps }) {
   const persistor = persistStore(store, { timeout: 10000 }); // Increase timeout to 10 seconds
 
@@ -40,4 +39,3 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
-
