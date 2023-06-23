@@ -36,16 +36,16 @@ const Login = ({ toggleForm }: LoginProps) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-blue-200">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold mb-6 text-black text-center">Log in to Twitter</h1>
+    <div className="flex justify-center items-center h-screen bg-zinc-900	">
+      <div className="bg-white rounded-lg shadow-lg p-6 bg-black">
+        <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center">Log in to Twitter</h1>
         <form className="w-full max-w-sm mx-auto" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+            <label className="block text-slate-200	 text-sm font-bold mb-2" htmlFor="email">
               Email
             </label>
             <input
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight bg-black focus:outline-none focus:shadow-outline"
               type="text"
               placeholder="Email"
               {...register('email', { required: true })}
@@ -53,11 +53,11 @@ const Login = ({ toggleForm }: LoginProps) => {
             {errors.email && <span className="text-red-500 text-xs">This field is required</span>}
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+            <label className="block text-slate-200	 text-sm font-bold mb-2" htmlFor="password">
               Password
             </label>
             <input
-              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight focus:outline-none focus:shadow-outline bg-black"
               type="password"
               placeholder="Password"
               {...register('password', { required: true })}
