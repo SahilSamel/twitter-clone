@@ -2,6 +2,8 @@ import React from 'react';
 import Layout from '@/layouts/mainLayout';
 import { useRouter } from "next/router";
 import { useSelector } from 'react-redux';
+import TweetList from '@/layouts/ListTweets';
+
 
 const Home = () => {
   const token = useSelector((state:any) => state.auth.token);
@@ -14,7 +16,8 @@ const Home = () => {
     list: "getRefreshCache"
   };
   return (
-    <Layout {...layoutProps}/>
+    <Layout middleComponent={TweetList} list="getRefreshCache" />
+
   );
 };
 
