@@ -12,9 +12,7 @@ const Home = () => {
     router.push("/auth");
     return;
   }
-  const layoutProps = {
-    list: "getRefreshCache"
-  };
+
   return (
     <Layout middleComponent={TweetList} list="getRefreshCache" />
 
