@@ -14,7 +14,7 @@ const Home = () => {
   }
 
   return (
-    <Layout middleComponent={TweetList} list="getRefreshCache" />
+    <Layout middleComponent={TweetList} list="refresh" />
 
   );
 };

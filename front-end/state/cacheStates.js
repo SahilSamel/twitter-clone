@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   timer: 0,
+  lastServedTimestamp: null,
 };
 
 const timerSlice = createSlice({
@@ -14,10 +15,11 @@ const timerSlice = createSlice({
     resetTimer(state) {
       state.timer = 0;
     },
+    setLastServedTimestamp(state, action) {
+      state.lastServedTimestamp = action.payload;
+    },
   },
 });
 
-export const { setTimer, resetTimer } = timerSlice.actions;
+export const { setTimer, resetTimer, setLastServedTimestamp } = timerSlice.actions;
 export default timerSlice.reducer;
-
-
