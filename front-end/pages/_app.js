@@ -1,11 +1,11 @@
+import "../styles/globals.css";
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
-import authReducer from '@/state/authStates';
-import timerReducer from '@/reducers/timerSlice';
-import { PersistGate } from 'redux-persist/integration/react';
+import authReducer from '../state/authStates';
+import timerReducer from '../state/cacheStates';
 import { FC } from 'react';
 
 const persistConfig = {

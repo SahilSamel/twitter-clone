@@ -28,7 +28,7 @@ const Layout = (props: any) => {
           maxWidth: "600px",
         }}
       >
-        {props.list=="getRefreshCache"?<CreateTweet/>:<div></div>}
+        {props.list=="refresh"?<CreateTweet/>:<div></div>}
         <MiddleComponent {...props} />
       </div>
       {showRight ? (

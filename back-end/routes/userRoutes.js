@@ -8,8 +8,6 @@ import {
   refreshEvent,
   scrollDownEvent,
   timeoutEvent,
-  getRefreshCache, 
-  getScrollDownCache
 } from "../controller/userController.js";
 const router = express.Router();
 

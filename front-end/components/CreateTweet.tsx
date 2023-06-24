@@ -12,7 +12,7 @@ interface ImagePreview {
   url: string;
 }
 
-const CreateTweet: React.FC = () => {
+const CreateTweet = () => {
 
   const [text, setText] = useState("");
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
