@@ -2,8 +2,6 @@ import User from "../models/users.js";
 import driver from "../connections/neo4j.js";
 import Tweet from "../models/tweets.js";
 
-
-
 // <-- FOLLOW/UNFOLLOW FUNCTIONS -->
 
 //Follow
@@ -40,7 +38,6 @@ const follow = async (req, res) => {
     res.status(500).json({ error: "Error updating follower's followeesCount" });
   }
 };
-
 
 //Unfollow
 const unfollow = async (req, res) => {
@@ -110,6 +107,44 @@ const getFollowingUserIds = (userId) => {
 
 // <-- End of FOLLOW/UNFOLLOW FUNCTIONS -->
 
+// <-- ACTIVITY NUMBER FUNCTIONS -->
+
+const updateActivityNumberandTimer = (userId, lastServedTimestamp) => {
+  const MAX_ACTIVITY_NUMBER = 1.0; // Maximum activity number
+  const MIN_ACTIVITY_NUMBER = 0.0; // Minimum activity number
+
+  // Fetch the previousActivityNumber from the User collection in your database
+  const user = User.findOne({ uid: userId }).exec();
+  const previousActivityNumber = user.activityNum;
+
+  // Calculate the recency score based on the time since the last served timestamp
+  const currentTimestamp = Date.now();
+  const timeDiffInHours =
+    (currentTimestamp - lastServedTimestamp) / (1000 * 60 * 60);
+  const recencyScore = Math.max(1 - timeDiffInHours / 24, 0);
+
+  // Calculate the final activity number by combining the previous activity number and recency score
+  const activityNumber = (previousActivityNumber + recencyScore) / 2;
+
+  // Update the activity number in the User collection
+  user.activityNum = activityNumber;
+  user.save();
+
+  // Define the maximum and minimum timer values
+  const maxTimerValue = 60000; // Maximum timer value (60 seconds)
+  const minTimerValue = 20000; // Minimum timer value (20 seconds)
+
+  // Calculate the timer value based on the activity number
+  let timer = maxTimerValue - activityNumber * (maxTimerValue - minTimerValue);
+
+  // Ensure the timer value is within the valid range
+  timer = Math.max(timer, minTimerValue);
+
+  return timer;
+};
+
+// <-- End of ACTIVITY NUMBER FUNCTIONS -->
+
 // <-- BOOKMARKING FUNCTIONS -->
 
 //Create a bookmark
@@ -131,14 +166,14 @@ const bookmark = (req, res) => {
 
 //Get Bookmarks
 const getBookmarks = (req, res) => {
-  const  userId  = req.userId.id;
+  const userId = req.userId.id;
 
   User.findOne({ uid: userId }, (err, user) => {
     if (err) {
-      return res.status(500).json({ error: 'Internal server error' });
+      return res.status(500).json({ error: "Internal server error" });
     }
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     const bookmarks = user.bookmarks;
     return res.json({ bookmarks });
@@ -164,13 +199,9 @@ const unbookmark = (req, res) => {
 
 // <-- End of BOOKMARKING FUNCTIONS -->
 
+// <-- CACHE FUNCTIONS -->
 
-// <-- CACHE FUNCTION -->
-
-const updateCache = (req, res, cacheType) => {
-  const userId = req.userId.id;
-  const { lastTimestamp } = req.body;
-
+const updateCache = (userId, lastTimestamp, cacheType) => {
   const timestamp = new Date(lastTimestamp);
 
   const filteredTweets = [];
@@ -200,7 +231,6 @@ const updateCache = (req, res, cacheType) => {
           filteredTweets.sort((a, b) => b.timestamp - a.timestamp);
 
           const sortedTweets = filteredTweets.slice(0, 50);
-          console.log(sortedTweets);
 
           const updateField =
             cacheType === "scrolldown" ? "scrolldownCache" : "refreshCache";
@@ -222,7 +252,6 @@ const updateCache = (req, res, cacheType) => {
               });
             })
             .catch((error) => {
-              console.error("Error updating user:", error);
               const errorMessage =
                 cacheType === "scrolldown"
                   ? "Failed to update ScrollDown cache"
@@ -232,59 +261,126 @@ const updateCache = (req, res, cacheType) => {
             });
         })
         .catch((error) => {
-          console.error("Error retrieving tweets:", error);
           res.status(500).json({ Error: "Failed to retrieve tweets" });
         });
     })
     .catch((error) => {
-      console.error("Error retrieving following user IDs:", error);
       res.status(500).json({ Error: "Failed to retrieve following user IDs" });
     });
 };
 
-// Get refreshCache
-const getRefreshCache = (req, res) => {
+const refreshEvent = async (req, res) => {
   const userId = req.userId.id;
-
-  User.findOne({ uid: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({ error: 'Internal server error' });
-    }
+  try {
+    const user = await User.findOne({ uid: userId }).exec();
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
-    const refreshCache = user.refreshCache;
-    return res.json({ refreshCache });
-  });
+    let refreshCache = user.refreshCache;
+    const { lastServedTimestamp } = req.body;
+
+    if (refreshCache.length === 0) {
+      // Update the refresh cache with a minimum timestamp
+      const minTimestamp = 0; // Default minimum timestamp in JavaScript
+      await updateCache(userId, minTimestamp, "refresh");
+
+      // Fetch the updated refresh cache
+      const updatedUser = await User.findOne({ uid: userId }).exec();
+      refreshCache = updatedUser.refreshCache;
+
+      if (refreshCache.length === 0) {
+        // If the refresh cache is still empty, return "No new tweets"
+        return res.json({ message: "No new tweets" });
+      }
+    }
+
+    const latestCacheItem = refreshCache[refreshCache.length - 1];
+    const tweet = await Tweet.findOne({
+      userId: latestCacheItem.userId,
+    }).exec();
+    if (!tweet) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+    const tweetObj = tweet.tweets.find(
+      (t) => t._id.toString() === latestCacheItem.tweetId.toString()
+    );
+    if (!tweetObj) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+    const bottomTweetTimestamp = tweetObj.timestamp;
+
+    const activityNumber = await updateActivityNumberandTimer(
+      userId,
+      lastServedTimestamp
+    );
+    updateCache(userId, bottomTweetTimestamp, "scrolldown");
+
+    const timerValue = calculateTimerValue(activityNumber);
+
+    return res.json({ refreshCache, timer: timerValue });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-
-//Get scroll down cache
-const getScrollDownCache = (req, res) => {
+const scrollDownEvent = async (req, res) => {
   const userId = req.userId.id;
-
-  User.findOne({ uid: userId }, (err, user) => {
-    if (err) {
-      return res.status(500).json({ error: 'Internal server error' });
-    }
+  try {
+    const user = await User.findOne({ uid: userId }).exec();
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     const scrollDownCache = user.scrolldownCache;
-    return res.json({ scrollDownCache });
-  });
-};
-// <-- End of CACHE FUNCTION -->
+    const { lastServedTimestamp } = req.body;
 
+    const latestCacheItem = scrollDownCache[scrollDownCache.length - 1];
+    const tweet = await Tweet.findOne({
+      userId: latestCacheItem.userId,
+    }).exec();
+    if (!tweet) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+    const tweetObj = tweet.tweets.find(
+      (t) => t._id.toString() === latestCacheItem.tweetId.toString()
+    );
+    if (!tweetObj) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
+    const bottomTweetTimestamp = tweetObj.timestamp;
+
+    const activityNumber = await updateActivityNumberandTimer(
+      userId,
+      lastServedTimestamp
+    );
+    updateCache(userId, bottomTweetTimestamp, "scrolldown");
+
+    const timerValue = calculateTimerValue(activityNumber);
+
+    return res.json({ scrollDownCache, timer: timerValue });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Timer Event
+const timeoutEvent = (req, res) => {
+  const userId = req.userId.id;
+  const { bottomTweetTimestamp } = req.body;
+  updateCache(userId, bottomTweetTimestamp, "refresh"); // Refresh Cache
+};
+
+// <-- End of CACHE FUNCTIONS -->
 
 export {
   follow,
   unfollow,
-  getRefreshCache, 
-  getScrollDownCache,
+  refreshEvent,
+  scrollDownEvent,
+  timeoutEvent,
   bookmark,
   getBookmarks,
   unbookmark,
   getFollowingUserIds,
-  updateCache,
 };

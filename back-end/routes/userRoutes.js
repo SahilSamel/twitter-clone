@@ -5,7 +5,11 @@ import {
   unfollow,
   bookmark,
   unbookmark,
-  updateCache
+  refreshEvent,
+  scrollDownEvent,
+  timeoutEvent,
+  getRefreshCache, 
+  getScrollDownCache
 } from "../controller/userController.js";
 const router = express.Router();
 
@@ -37,13 +41,22 @@ router.post("/unbookmark", verifyToken, (req, res) => {
 
 // <-- End of BOOKMARKING FUNCTIONALITIES -->
 
-//Update Refresh Cache
+// <-- CACHING FUNCTIONALITIES -->
+
+//Refresh Event
 router.post("/refresh", verifyToken, (req, res) => {
-  updateCache(req, res, "refresh");
+  refreshEvent(req, res, "refresh");
 });
 
-//Update Scroll Down Cache
+//Scroll Down Event
 router.post("/scrolldown", verifyToken, (req, res) => {
-  updateCache(req, res, "scrolldown");
+  scrollDownEvent(req, res, "scrolldown");
 });
+
+//Timeout Event
+router.post("/timeout", verifyToken, (req, res) => {
+  timeoutEvent(req, res);
+});
+
+// <-- End of CACHING FUNCTIONALITIES -->
 export default router;
