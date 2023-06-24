@@ -1,24 +1,26 @@
-import "../styles/globals.css";
-import { configureStore } from "@reduxjs/toolkit";
-import { Provider, useSelector } from "react-redux";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import { PersistGate } from "redux-persist/integration/react";
-import authReducer from "../state/authStates";
-import React from "react";
-import { useRouter } from "next/router";
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { PersistGate } from 'redux-persist/integration/react';
+import authReducer from '@/state/authStates';
+import timerReducer from '@/reducers/timerSlice';
+import { PersistGate } from 'redux-persist/integration/react';
+import { FC } from 'react';
 
 const persistConfig = {
   timeout: 500,
-  key: "root",
+  key: 'root',
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedTimerReducer = persistReducer(persistConfig, timerReducer);
 
 const store = configureStore({
   reducer: {
-    auth: persistedReducer,
+    auth: persistedAuthReducer,
+    timer: persistedTimerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -26,7 +28,7 @@ const store = configureStore({
     }),
 });
 
-function MyApp({ Component, pageProps }) {
+const MyApp = ({ Component, pageProps }) => {
   const persistor = persistStore(store, { timeout: 10000 }); // Increase timeout to 10 seconds
 
   return (
@@ -36,6 +38,6 @@ function MyApp({ Component, pageProps }) {
       </PersistGate>
     </Provider>
   );
-}
+};
 
 export default MyApp;
