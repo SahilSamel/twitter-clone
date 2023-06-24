@@ -2,7 +2,6 @@ import axios from "axios";
 import { serverUrl } from "@/constants/appConstant";
 
 const APIPOST = async (endpoint,token, data, func) => {
-  const token = await useSelector((state) => state.auth.token);
 
   try {
     const response = await axios.post(serverUrl + endpoint, data, {

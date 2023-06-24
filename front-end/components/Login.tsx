@@ -37,8 +37,8 @@ const Login = ({ toggleForm }: LoginProps) => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-zinc-900	">
-      <div className="bg-white rounded-lg shadow-lg p-6 bg-black">
-        <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center">Log in to Twitter</h1>
+      <div className="rounded-lg shadow-lg p-6 bg-black">
+        <h1 className="text-3xl font-bold mb-6 text-slate-200	text-center">Log in to Twitter</h1>
         <form className="w-full max-w-sm mx-auto" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
             <label className="block text-slate-200	 text-sm font-bold mb-2" htmlFor="email">

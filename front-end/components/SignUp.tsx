@@ -40,7 +40,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
 
   return (
     <div className="flex justify-center items-center h-screen bg-zinc-900	">
-      <div className="bg-white rounded-lg shadow-lg p-6 bg-black	" >
+      <div className="rounded-lg shadow-lg p-6 bg-black	" >
         <h1 className="text-3xl font-bold mb-6 text-slate-200	 text-center ">
           Sign up for Twitter
         </h1>

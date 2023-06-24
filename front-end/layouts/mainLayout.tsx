@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "@/components/Sidebar";
 import { useWindowSize } from "@/utils/Windowsize"; // Custom hook for getting window size
+import CreateTweet from "@/components/CreateTweet";
 
 const Layout = (props: any) => {
   const { middleComponent: MiddleComponent } = props;
@@ -27,6 +28,7 @@ const Layout = (props: any) => {
           maxWidth: "600px",
         }}
       >
+        {props.list=="getRefreshCache"?<CreateTweet/>:<div></div>}
         <MiddleComponent {...props} />
       </div>
       {showRight ? (

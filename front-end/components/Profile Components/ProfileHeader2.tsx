@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { MdCalendarMonth } from "react-icons/md";
+import ProfileImage from "../ProfileImage";
 
 const ProfileHeader2 = () => {
   return (
@@ -11,11 +12,9 @@ const ProfileHeader2 = () => {
         alt="Picture of the author"
       />
       <div className="relative bottom-16 left-5">
-        <Image
-          src="https://pbs.twimg.com/profile_images/1369150025360494593/U6uUYd2l_400x400.jpg"
+        <ProfileImage
           width={135}
           height={135}
-          alt="Picture of the author"
           className="absolute rounded-full border-solid border-4 border-black"
         />
       </div>
@@ -24,23 +23,23 @@ const ProfileHeader2 = () => {
           Edit Profile
         </div>
       </div>
-      
-      
 
       <div className="p-4">
-
         <div className=" font-bold text-xl	">UserName</div>
         <div className="text-gray-500 text-base pb-4		">@userhandle</div>
 
-
         <div className="text-gray-500 text-base flex items-center pb-2">
-          <MdCalendarMonth/>
-        <div >Joined June 2023</div>
+          <MdCalendarMonth />
+          <div>Joined June 2023</div>
         </div>
 
         <div className="flex ">
-          <div className="text-gray-500 pr-6 hover:underline decoration-solid cursor-pointer" ><span className="text-white font-bold">25</span> Following</div>
-          <div className="text-gray-500 hover:underline decoration-solid cursor-pointer"><span className="text-white	font-bold	">3345</span> Followers</div>
+          <div className="text-gray-500 pr-6 hover:underline decoration-solid cursor-pointer">
+            <span className="text-white font-bold">25</span> Following
+          </div>
+          <div className="text-gray-500 hover:underline decoration-solid cursor-pointer">
+            <span className="text-white	font-bold	">3345</span> Followers
+          </div>
         </div>
       </div>
     </div>
