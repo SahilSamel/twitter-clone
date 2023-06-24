@@ -28,7 +28,7 @@ const TweetList = (props: any) => {
       setList("scrolldown"); // Change list to "scrolldown" for refreshing
 
       const jsonData = { lastServedTimestamp };
-      APIPOST(`/${list}`, token, jsonData, function (err: any, data: any) {
+      APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
@@ -37,7 +37,7 @@ const TweetList = (props: any) => {
       });
     } else if (list === "scrolldown") {
       const jsonData = { lastServedTimestamp };
-      APIPOST(`/${list}`, token, jsonData, function (err: any, data: any) {
+      APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
@@ -49,7 +49,7 @@ const TweetList = (props: any) => {
         }
       });
     } else {
-      APIGET(`/${list}`, token, function (err: any, data: any) {
+      APIGET(`/user/${list}`, token, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {

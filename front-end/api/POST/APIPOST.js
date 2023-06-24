@@ -14,6 +14,7 @@ const APIPOST = async (endpoint,token, data, func) => {
     func(null, jsonData);
   } catch (error) {
     console.log(endpoint);
+    console.log(error);
     func(error, "");
   }
 };
