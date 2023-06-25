@@ -9,19 +9,8 @@ router.get("/getTweet", verifyToken, (req, res) => {
     fetchTweet(req, res);
 });
 
-//Fetch Refresh Cache
-router.get("/getRefreshCache", verifyToken, (req, res) => {
-    fetchTweet(req, res);
-});
-
-//Fetch Scroll Down Cache
-router.get("/getScrollDownCache", verifyToken, (req, res) => {
-    fetchTweet(req, res);
-});
-
 //Fetch Bookmarks
 router.get("/getBookmarks", verifyToken, (req, res) => {
-    console.log("ASDadniasndiadnaush")
     getBookmarks(req, res);
 });
 

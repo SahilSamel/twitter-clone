@@ -25,7 +25,7 @@ const TweetList = (props: any) => {
 
   const fetchTweetList = () => {
     if (list === "refresh") {
-      setList("scrolldown"); // Change list to "scrolldown" for refreshing
+      setList("scrolldown"); 
 
       const jsonData = { lastServedTimestamp };
       APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
@@ -58,7 +58,6 @@ const TweetList = (props: any) => {
         }
       });
     }
-    console.log(tweetDataList)
   };
 
   const handleRefresh = () => {
