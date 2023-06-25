@@ -30,16 +30,15 @@ const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          console.log(data);
           setTweetData(data);
         }
       }
     );
   };
 
-  // useEffect(() => {
-  //   fetchTweetData();
-  // }, [userId, tweetId]);
+  useEffect(() => {
+    fetchTweetData();
+  }, [userId, tweetId]);
 
   if (!tweetData) {
     return <div>Loading...</div>;

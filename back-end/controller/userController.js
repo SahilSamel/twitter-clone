@@ -109,38 +109,34 @@ const getFollowingUserIds = (userId) => {
 
 // <-- ACTIVITY NUMBER FUNCTIONS -->
 
-const updateActivityNumberandTimer = (userId, lastServedTimestamp) => {
-  const MAX_ACTIVITY_NUMBER = 1.0; // Maximum activity number
-  const MIN_ACTIVITY_NUMBER = 0.0; // Minimum activity number
+const updateActivityNumberandTimer = async (userId, lastServedTimestamp) => {
+  const MAX_ACTIVITY_NUMBER = 1.0; 
+  const MIN_ACTIVITY_NUMBER = 0.0; 
 
-  // Fetch the previousActivityNumber from the User collection in your database
-  const user = User.findOne({ uid: userId }).exec();
-  const previousActivityNumber = user.activityNum;
-
-  // Calculate the recency score based on the time since the last served timestamp
   const currentTimestamp = Date.now();
   const timeDiffInHours =
     (currentTimestamp - lastServedTimestamp) / (1000 * 60 * 60);
   const recencyScore = Math.max(1 - timeDiffInHours / 24, 0);
 
-  // Calculate the final activity number by combining the previous activity number and recency score
-  const activityNumber = (previousActivityNumber + recencyScore) / 2;
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { uid: userId },
+      { $set: { activityNum: (( + recencyScore) / 2) } },
+      { new: true }
+    ).exec();
 
-  // Update the activity number in the User collection
-  user.activityNum = activityNumber;
-  user.save();
+    const activityNumber = updatedUser.activityNum;
+    const maxTimerValue = 60000; 
+    const minTimerValue = 20000; 
 
-  // Define the maximum and minimum timer values
-  const maxTimerValue = 60000; // Maximum timer value (60 seconds)
-  const minTimerValue = 20000; // Minimum timer value (20 seconds)
+    let timer = maxTimerValue - activityNumber * (maxTimerValue - minTimerValue);
 
-  // Calculate the timer value based on the activity number
-  let timer = maxTimerValue - activityNumber * (maxTimerValue - minTimerValue);
+    timer = Math.max(timer, minTimerValue);
 
-  // Ensure the timer value is within the valid range
-  timer = Math.max(timer, minTimerValue);
-
-  return timer;
+    return timer;
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 // <-- End of ACTIVITY NUMBER FUNCTIONS -->
@@ -201,7 +197,7 @@ const unbookmark = (req, res) => {
 
 // <-- CACHE FUNCTIONS -->
 
-const updateCache = (userId, lastTimestamp, cacheType) => {
+const updateCache = (userId, lastTimestamp, cacheType, res) => {
   const timestamp = new Date(lastTimestamp);
 
   const filteredTweets = [];
@@ -246,26 +242,23 @@ const updateCache = (userId, lastTimestamp, cacheType) => {
                   ? "ScrollDown cache updated successfully"
                   : "Refresh cache updated successfully";
 
-              res.status(200).json({
-                Message: message,
-                User: updatedUser,
-              });
             })
             .catch((error) => {
               const errorMessage =
                 cacheType === "scrolldown"
                   ? "Failed to update ScrollDown cache"
                   : "Failed to update Refresh cache";
-
-              res.status(500).json({ Error: errorMessage });
+              console.log(error);
             });
+          })
+          .catch((error) => {
+            
+            console.log(error);
+          });
         })
         .catch((error) => {
-          res.status(500).json({ Error: "Failed to retrieve tweets" });
-        });
-    })
-    .catch((error) => {
-      res.status(500).json({ Error: "Failed to retrieve following user IDs" });
+          
+          console.log(error);
     });
 };
 
@@ -282,7 +275,7 @@ const refreshEvent = async (req, res) => {
     if (refreshCache.length === 0) {
       // Update the refresh cache with a minimum timestamp
       const minTimestamp = 0; // Default minimum timestamp in JavaScript
-      await updateCache(userId, minTimestamp, "refresh");
+      await updateCache(userId, minTimestamp, "refresh", res);
 
       // Fetch the updated refresh cache
       const updatedUser = await User.findOne({ uid: userId }).exec();
@@ -309,13 +302,12 @@ const refreshEvent = async (req, res) => {
     }
     const bottomTweetTimestamp = tweetObj.timestamp;
 
-    const activityNumber = await updateActivityNumberandTimer(
+    const timerValue = await updateActivityNumberandTimer(
       userId,
       lastServedTimestamp
     );
-    updateCache(userId, bottomTweetTimestamp, "scrolldown");
+    await updateCache(userId, bottomTweetTimestamp, "scrolldown", res);
 
-    const timerValue = calculateTimerValue(activityNumber);
 
     return res.json({ refreshCache, timer: timerValue });
   } catch (err) {
@@ -331,9 +323,14 @@ const scrollDownEvent = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    const scrollDownCache = user.scrolldownCache;
-    const { lastServedTimestamp } = req.body;
 
+    const scrollDownCache = user.scrolldownCache;
+    if (scrollDownCache.length === 0) {
+      // Return early if scrollDownCache is empty
+      return res.json({ scrollDownCache: [], timer: 0 });
+    }
+
+    const { lastServedTimestamp } = req.body;
     const latestCacheItem = scrollDownCache[scrollDownCache.length - 1];
     const tweet = await Tweet.findOne({
       userId: latestCacheItem.userId,
@@ -349,13 +346,11 @@ const scrollDownEvent = async (req, res) => {
     }
     const bottomTweetTimestamp = tweetObj.timestamp;
 
-    const activityNumber = await updateActivityNumberandTimer(
+    const timerValue = await updateActivityNumberandTimer(
       userId,
       lastServedTimestamp
     );
-    updateCache(userId, bottomTweetTimestamp, "scrolldown");
-
-    const timerValue = calculateTimerValue(activityNumber);
+    await updateCache(userId, bottomTweetTimestamp, "scrolldown", res);
 
     return res.json({ scrollDownCache, timer: timerValue });
   } catch (err) {
@@ -364,11 +359,12 @@ const scrollDownEvent = async (req, res) => {
   }
 };
 
+
 // Timer Event
 const timeoutEvent = (req, res) => {
   const userId = req.userId.id;
   const { bottomTweetTimestamp } = req.body;
-  updateCache(userId, bottomTweetTimestamp, "refresh"); // Refresh Cache
+  updateCache(userId, bottomTweetTimestamp, "refresh", res); // Refresh Cache
 };
 
 // <-- End of CACHE FUNCTIONS -->

@@ -29,7 +29,7 @@ const store = configureStore({
 });
 
 const MyApp = ({ Component, pageProps }) => {
-  const persistor = persistStore(store, { timeout: 10000 }); // Increase timeout to 10 seconds
+  const persistor = persistStore(store, { timeout: 43200 }); // Increase timeout to 10 seconds
 
   return (
     <Provider store={store}>

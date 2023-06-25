@@ -8,7 +8,6 @@ import { useRouter } from "next/router";
 export default function Index() {
   const token = useSelector((state: any) => state.auth.token);
   const router = useRouter();
-  console.log(token);
 
   // Check if user is logged in
   if (!token) {

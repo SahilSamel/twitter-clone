@@ -1,5 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { setToken } from '@/state/authStates';
+import { setLastServedTimestamp } from '@/state/cacheStates';
 import { useRouter } from 'next/router';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import POST from '@/api/POST/POST';
@@ -30,6 +31,7 @@ const Login = ({ toggleForm }: LoginProps) => {
       } else {
         const { token } = data;
         dispatch(setToken(token));
+        dispatch(setLastServedTimestamp(Date.now()));
         router.push('/');
       }
     });

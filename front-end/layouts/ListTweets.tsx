@@ -45,6 +45,7 @@ const TweetList = (props: any) => {
             ...prevTweetDataList,
             ...data.scrollDownCache,
           ]);
+          console.log(tweetDataList)
           dispatch(setTimer(data.timer)); // Update lastServedTimestamp
         }
       });
@@ -57,6 +58,7 @@ const TweetList = (props: any) => {
         }
       });
     }
+    console.log(tweetDataList)
   };
 
   const handleRefresh = () => {
@@ -64,32 +66,32 @@ const TweetList = (props: any) => {
     setList("refresh"); // Change list to "refresh" when the refresh button is clicked
   };
 
-  const handleScroll = () => {
-    if (
-      listContainerRef.current &&
-      listContainerRef.current.scrollHeight -
-        listContainerRef.current.scrollTop ===
-        listContainerRef.current.clientHeight
-    ) {
-      fetchTweetList(); // Reached the bottom of the component, fetch more data
-    }
-  };
+  // const handleScroll = () => {
+  //   if (
+  //     listContainerRef.current &&
+  //     listContainerRef.current.scrollHeight -
+  //       listContainerRef.current.scrollTop ===
+  //       listContainerRef.current.clientHeight
+  //   ) {
+  //     fetchTweetList(); // Reached the bottom of the component, fetch more data
+  //   }
+  // };
 
   useEffect(() => {
     fetchTweetList();
-  }, [list, refreshCount]);
+  }, [ refreshCount]);
 
-  useEffect(() => {
-    if (listContainerRef.current) {
-      listContainerRef.current.addEventListener("scroll", handleScroll);
-    }
+  // useEffect(() => {
+  //   if (listContainerRef.current) {
+  //     listContainerRef.current.addEventListener("scroll", handleScroll);
+  //   }
 
-    return () => {
-      if (listContainerRef.current) {
-        listContainerRef.current.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (listContainerRef.current) {
+  //       listContainerRef.current.removeEventListener("scroll", handleScroll);
+  //     }
+  //   };
+  // }, []);
 
   return (
     <div ref={listContainerRef} style={{ overflowY: "scroll", height: "500px" }}>
