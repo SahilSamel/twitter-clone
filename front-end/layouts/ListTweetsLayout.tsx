@@ -98,13 +98,17 @@ const TweetList = (props: any) => {
       {list === "refresh" || list === "scrolldown" ? (
         <button onClick={handleRefresh}>Refresh</button>
       ) : null}
-      {tweetDataList.map((tweetData, index) => (
-        <Tweet
-          key={index}
-          userId={tweetData.userId}
-          tweetId={tweetData.tweetId}
-        />
-      ))}
+      {(tweetDataList === undefined || tweetDataList.length === 0) ? (
+        <p>No tweets to display</p>
+      ) : (
+        tweetDataList.map((tweetData, index) => (
+          <Tweet
+            key={index}
+            userId={tweetData.userId}
+            tweetId={tweetData.tweetId}
+          />
+        ))
+      )}
     </div>
   );
 };

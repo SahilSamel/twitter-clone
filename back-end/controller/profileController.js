@@ -79,7 +79,6 @@ const deleteUser = async (req, res) => {
   try {
     await User.deleteOne({ uid });
     await Tweet.deleteOne({ uid });
-
     await admin.auth().deleteUser(uid);
 
     const result = await session.run("MATCH (u:User {uid: $uid}) DELETE u", {

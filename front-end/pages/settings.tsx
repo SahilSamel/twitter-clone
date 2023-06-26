@@ -2,18 +2,21 @@ import React from 'react';
 import Layout from '@/layouts/mainLayout';
 import { useRouter } from "next/router";
 import { useSelector } from 'react-redux';
-import TweetList from '@/layouts/ListTweetsLayout';
+import SettingsLayout from '@/layouts/SettingsLayout';
 
-const Bookmarks = () => {
+
+const Settings = () => {
   const token = useSelector((state:any) => state.auth.token);
   const router = useRouter();
   if(!token){
     router.push("/auth");
     return;
   }
+
   return (
-    <Layout middleComponent={TweetList} list="getBookmarks"/>
+    <Layout middleComponent={SettingsLayout} />
+
   );
 };
 
-export default Bookmarks;
+export default Settings;

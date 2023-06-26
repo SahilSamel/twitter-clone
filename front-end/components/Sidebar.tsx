@@ -89,6 +89,9 @@ const Sidebar = () => {
         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
           isMobile ? "text-3xl" : "text-2xl"
         } hover:bg-blue-100 hover:text-blue-500`}
+        onClick={() => {
+          router.push("/settings");
+        }}
       >
         <AiOutlineSetting />
         {!isMobile && <span>Settings</span>}
