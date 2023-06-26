@@ -1,12 +1,12 @@
 import React from 'react';
 import Layout from '@/layouts/mainLayout';
+import { useRouter } from "next/router";
+import { useSelector } from 'react-redux';
+import TweetList from '@/layouts/ListTweets';
 
 const Bookmarks = () => {
-  const layoutProps = {
-    list: "getBookmarks"
-  };
   return (
-    <Layout {...layoutProps}/>
+    <Layout middleComponent={TweetList} list="getBookmarks"/>
   );
 };
 

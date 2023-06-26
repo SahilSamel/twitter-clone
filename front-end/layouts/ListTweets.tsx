@@ -26,13 +26,13 @@ const TweetList = (props: any) => {
   const fetchTweetList = () => {
     if (list === "refresh") {
       setList("scrolldown"); 
-
       const jsonData = { lastServedTimestamp };
       APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
           setTweetDataList(data.refreshCache);
+          
         }
       });
     } else if (list === "scrolldown") {
@@ -45,16 +45,17 @@ const TweetList = (props: any) => {
             ...prevTweetDataList,
             ...data.scrollDownCache,
           ]);
-          console.log(tweetDataList)
-          dispatch(setTimer(data.timer)); // Update lastServedTimestamp
+          
+          dispatch(setTimer(data.timer)); 
         }
       });
     } else {
-      APIGET(`/user/${list}`, token, function (err: any, data: any) {
+      APIPOST(`/user/${list}`, token, {},  function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          setTweetDataList(data);
+          setTweetDataList(data.bookmarks);
+          
         }
       });
     }
@@ -94,7 +95,9 @@ const TweetList = (props: any) => {
 
   return (
     <div ref={listContainerRef} style={{ overflowY: "scroll", height: "500px" }}>
-      <button onClick={handleRefresh}>Refresh</button>
+      {list === "refresh" || list === "scrolldown" ? (
+        <button onClick={handleRefresh}>Refresh</button>
+      ) : null}
       {tweetDataList.map((tweetData, index) => (
         <Tweet
           key={index}

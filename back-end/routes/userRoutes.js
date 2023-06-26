@@ -8,6 +8,7 @@ import {
   refreshEvent,
   scrollDownEvent,
   timeoutEvent,
+  getBookmarks,
 } from "../controller/userController.js";
 const router = express.Router();
 
@@ -35,6 +36,10 @@ router.post("/bookmark", verifyToken, (req, res) => {
 //Delete bookmark
 router.post("/unbookmark", verifyToken, (req, res) => {
   unbookmark(req, res);
+});
+
+router.post("/getBookmarks", verifyToken, (req, res) => {
+  getBookmarks(req, res);
 });
 
 // <-- End of BOOKMARKING FUNCTIONALITIES -->

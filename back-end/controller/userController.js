@@ -107,8 +107,10 @@ const getFollowingUserIds = (userId) => {
 
 // <-- End of FOLLOW/UNFOLLOW FUNCTIONS -->
 
+
 // <-- ACTIVITY NUMBER FUNCTIONS -->
 
+// Update Activity Number, Timer
 const updateActivityNumberandTimer = async (userId, lastServedTimestamp) => {
   const MAX_ACTIVITY_NUMBER = 1.0; 
   const MIN_ACTIVITY_NUMBER = 0.0; 
@@ -141,16 +143,23 @@ const updateActivityNumberandTimer = async (userId, lastServedTimestamp) => {
 
 // <-- End of ACTIVITY NUMBER FUNCTIONS -->
 
+
 // <-- BOOKMARKING FUNCTIONS -->
 
 //Create a bookmark
 const bookmark = (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
-
   User.findOneAndUpdate(
     { uid: userId },
-    { $push: { bookmarks: { userId: tweetUserId, tweetId } } }
+    {
+      $push: {
+        bookmarks: {
+          userId: tweetUserId,
+          tweetId: tweetId
+        }
+      }
+    }
   )
     .then(() => {
       res.status(200).json({ message: "Tweet bookmarked successfully" });
@@ -159,6 +168,7 @@ const bookmark = (req, res) => {
       res.status(500).json({ error: "Error while bookmarking tweet" });
     });
 };
+
 
 //Get Bookmarks
 const getBookmarks = (req, res) => {
@@ -197,6 +207,7 @@ const unbookmark = (req, res) => {
 
 // <-- CACHE FUNCTIONS -->
 
+// Update Appropriate Cache
 const updateCache = (userId, lastTimestamp, cacheType, res) => {
   const timestamp = new Date(lastTimestamp);
 
@@ -262,6 +273,7 @@ const updateCache = (userId, lastTimestamp, cacheType, res) => {
     });
 };
 
+// Refresh Event
 const refreshEvent = async (req, res) => {
   const userId = req.userId.id;
   try {
@@ -316,6 +328,7 @@ const refreshEvent = async (req, res) => {
   }
 };
 
+//Scroll Down Event
 const scrollDownEvent = async (req, res) => {
   const userId = req.userId.id;
   try {

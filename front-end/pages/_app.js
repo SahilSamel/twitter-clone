@@ -12,6 +12,7 @@ const persistConfig = {
   timeout: 500,
   key: 'root',
   storage,
+  whitelist: ['auth'],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);

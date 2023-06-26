@@ -24,7 +24,7 @@ const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
   const token = useSelector((state: any) => state.auth.token);
   const fetchTweetData = () => {
     APIGET(
-      `/getTweet?userId=${userId}&tweetId=${tweetId}`,
+      `/compose/getTweet?userId=${userId}&tweetId=${tweetId}`,
       token,
       function (err: any, data: any) {
         if (err) {

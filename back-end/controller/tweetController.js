@@ -104,7 +104,6 @@ const fetchTweet = (req, res) => {
     if (!tweet) {
       return res.status(404).json({ error: 'Tweet not in user' });
     }
-    console.log(tweet);
     res.json(tweet);
   });
 };

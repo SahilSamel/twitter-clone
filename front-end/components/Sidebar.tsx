@@ -71,7 +71,7 @@ const Sidebar = () => {
           isMobile ? "text-3xl" : "text-2xl"
         } hover:bg-blue-100 hover:text-blue-500`}
         onClick={() => {
-          test();
+          router.push("/bookmarks");
         }}
       >
         <AiOutlineBook />
