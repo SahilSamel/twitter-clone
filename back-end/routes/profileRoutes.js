@@ -1,7 +1,26 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { deleteUser, updateBio, updateLocation, updateBirthdate } from "../controller/profileController.js";
+import { selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate } from "../controller/profileController.js";
 const router = express.Router();
+
+// <-- SELF TWEET RETRIEVAL FUNCTIONALITIES -->
+
+//Get self tweets
+router.get("/getTweets", verifyToken, (req,res) => {
+    selfTweets(req, res);
+})
+
+//Get self replies 
+router.get("/getReplies", verifyToken, (req,res) => {
+    selfReplies(req, res);
+})
+
+//Get self liked tweets
+router.get("/getliked", verifyToken, (req,res) => {
+    selfLiked(req, res);
+})
+
+// <-- End of SELF TWEET RETRIEVAL FUNCTIONALITIES -->
 
 //<--- PROFILE UPDATE FUNCTIONALITIES --->
 

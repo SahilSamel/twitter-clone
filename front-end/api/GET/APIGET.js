@@ -13,7 +13,6 @@ const APIGET = async (endpoint, token, func) => {
     const jsonData = response.data;
     func(null, jsonData);
   } catch (error) {
-    console.log(serverUrl + endpoint);
     func(error, "");
   }
 };

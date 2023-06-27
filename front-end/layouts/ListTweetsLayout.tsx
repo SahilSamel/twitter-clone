@@ -49,13 +49,22 @@ const TweetList = (props: any) => {
           dispatch(setTimer(data.timer)); 
         }
       });
-    } else {
+    } else if(list ==="bookmarks"){
       APIPOST(`/user/${list}`, token, {},  function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
           setTweetDataList(data.bookmarks);
           
+        }
+      });
+    } else {
+      APIGET(`/profile/${list}`, token, function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          console.log(data.profileDisplayTweets)
+          setTweetDataList(data.profileDisplayTweets);
         }
       });
     }

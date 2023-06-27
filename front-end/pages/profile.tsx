@@ -4,10 +4,24 @@ import ProfileHeader2 from "@/components/Profile Components/ProfileHeader2";
 import ProfileLikes from "@/components/Profile Components/ProfileLikes";
 import ProfileMedia from "@/components/Profile Components/ProfileMedia";
 import ProfileReplies from "@/components/Profile Components/ProfileReplies";
-import ProfileTweets from "@/components/Profile Components/ProfileTweets";
 import { useState } from "react";
+import ListTweets from "@/layouts/ListTweetsLayout";
+import TweetList from "@/layouts/ListTweetsLayout";
+
 const ProfilePage = () => {
   const [section, setSection] = useState(0);
+
+  let listProp = "";
+  if (section === 0) {
+    listProp = "getTweets";
+  } else if (section === 1) {
+    listProp = "getReplies";
+  } else if (section === 2) {
+    listProp = "getMedia";
+  } else if (section === 3) {
+    listProp = "getLiked";
+  }
+
   return (
     <div>
       <div className="border border-slate-600	">
@@ -82,10 +96,10 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className="border border-slate-600">
-        {section === 0 && <ProfileTweets />}
-        {section === 1 && <ProfileReplies />}
-        {section === 2 && <ProfileMedia />}
-        {section === 3 && <ProfileLikes />}
+        {section === 0 && <TweetList list={listProp} />}
+        {section === 1 && <TweetList list={listProp} />}
+        {section === 2 && <TweetList list={listProp} />}
+        {section === 3 && <TweetList list={listProp} />}
       </div>
     </div>
   );
@@ -96,3 +110,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

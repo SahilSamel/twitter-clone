@@ -10,6 +10,79 @@ admin.initializeApp({
 });
 // <-- End of Firebase admin SDK Initialization-->
 
+// <-- SELF TWEET LISTING FUNCTIONS -->
+
+// Get Self tweets
+const selfTweets = (req, res) => {
+  const userId = req.userId.id;
+  Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (!tweetDocument) {
+      return res.status(404).json({ error: "No tweets found for the user" });
+    }
+
+    const profileDisplayTweets = tweetDocument.tweets.map((tweet) => ({
+      userId: userId,
+      tweetId: tweet._id,
+    }));
+
+    return res.status(200).json(profileDisplayTweets);
+  });
+};
+
+// Get self replies
+const selfReplies = (req, res) => {
+  const userId = req.userId.id;
+  
+  Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (!tweetDocument) {
+      return res.status(404).json({ error: "No tweets found for the user" });
+    }
+
+    const profileDisplayTweets = tweetDocument.tweets
+      .filter((tweet) => tweet.type !== 1)
+      .map((tweet) => ({
+        userId: userId,
+        tweetId: tweet._id,
+      }));
+
+    return res.status(200).json(profileDisplayTweets);
+  });
+};
+
+// Get self liked tweets
+const selfLiked = (req, res) => {
+  const userId = req.userId.id;
+
+  User.findOne({ userId }, "liked", (err, userDocument) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (!userDocument) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const profileDisplayTweets = userDocument.liked;
+
+    return res.status(200).json(profileDisplayTweets);
+  });
+};
+
+
+// <-- End of SELF TWEET LISTING FUNCTIONS -->
+
+
 // <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
 //Update Location
@@ -96,4 +169,4 @@ const deleteUser = async (req, res) => {
 
 // <-- End of DELETE USER FUNCTION -->
 
-export { deleteUser, updateBio, updateLocation, updateBirthdate };
+export { selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate };
