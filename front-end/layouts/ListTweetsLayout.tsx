@@ -63,7 +63,6 @@ const TweetList = (props: any) => {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          console.log(data.profileDisplayTweets)
           setTweetDataList(data.profileDisplayTweets);
         }
       });

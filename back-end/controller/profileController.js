@@ -30,7 +30,7 @@ const selfTweets = (req, res) => {
       tweetId: tweet._id,
     }));
 
-    return res.status(200).json(profileDisplayTweets);
+    return res.status(200).json({profileDisplayTweets});
   });
 };
 
@@ -55,15 +55,14 @@ const selfReplies = (req, res) => {
         tweetId: tweet._id,
       }));
 
-    return res.status(200).json(profileDisplayTweets);
+    return res.status(200).json({profileDisplayTweets});
   });
 };
 
 // Get self liked tweets
 const selfLiked = (req, res) => {
   const userId = req.userId.id;
-
-  User.findOne({ userId }, "liked", (err, userDocument) => {
+  User.findOne({ uid:userId }, "liked", (err, userDocument) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -75,7 +74,7 @@ const selfLiked = (req, res) => {
 
     const profileDisplayTweets = userDocument.liked;
 
-    return res.status(200).json(profileDisplayTweets);
+    return res.status(200).json({profileDisplayTweets});
   });
 };
 

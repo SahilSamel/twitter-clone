@@ -8,17 +8,17 @@ const router = express.Router();
 //Get self tweets
 router.get("/getTweets", verifyToken, (req,res) => {
     selfTweets(req, res);
-})
+});
 
 //Get self replies 
 router.get("/getReplies", verifyToken, (req,res) => {
     selfReplies(req, res);
-})
+});
 
 //Get self liked tweets
-router.get("/getliked", verifyToken, (req,res) => {
+router.get("/getLiked", verifyToken, (req,res) => {
     selfLiked(req, res);
-})
+});
 
 // <-- End of SELF TWEET RETRIEVAL FUNCTIONALITIES -->
 
