@@ -28,6 +28,7 @@ const registerUser = (uid, userHandle) => {
   const newUser = new User({
     uid,
     userHandle,
+    joinDate: new Date(),
   });
   const session = driver.session(); // neo4j session creation
 

@@ -6,6 +6,7 @@ const usersSchema = new mongoose.Schema({
   userHandle: {type: String, required:true},
   followersCount: { type: Number, default: 0 },
   followeesCount: { type: Number, default: 0 },
+  joinDate:{type:Date},
   refreshCache: [
     {
       userId: { type: String, required: true },

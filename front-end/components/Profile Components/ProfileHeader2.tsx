@@ -2,7 +2,25 @@ import Image from "next/image";
 import { MdCalendarMonth } from "react-icons/md";
 import ProfileImage from "../ProfileImage";
 
-const ProfileHeader2 = () => {
+interface ProfileHeader2Props {
+  userName: string;
+  userHandle: string;
+  joinDate: string;
+  following: number;
+  followers: number;
+  location: string;
+  bio: string;
+}
+
+const ProfileHeader2: React.FC<ProfileHeader2Props> = ({
+  userName,
+  userHandle,
+  joinDate,
+  following,
+  followers,
+  location,
+  bio,
+}) => {
   return (
     <div>
       <Image
@@ -25,22 +43,25 @@ const ProfileHeader2 = () => {
       </div>
 
       <div className="p-4">
-        <div className=" font-bold text-xl	">UserName</div>
-        <div className="text-gray-500 text-base pb-4		">@userhandle</div>
+        <div className=" font-bold text-xl	">{userName}</div>
+        <div className="text-gray-500 text-base pb-4		">{`@${userHandle}`}</div>
 
         <div className="text-gray-500 text-base flex items-center pb-2">
           <MdCalendarMonth />
-          <div>Joined June 2023</div>
+          <div>{`Joined ${joinDate}`}</div>
         </div>
 
         <div className="flex ">
           <div className="text-gray-500 pr-6 hover:underline decoration-solid cursor-pointer">
-            <span className="text-white font-bold">25</span> Following
+            <span className="text-white font-bold">{following}</span> Following
           </div>
           <div className="text-gray-500 hover:underline decoration-solid cursor-pointer">
-            <span className="text-white	font-bold	">3345</span> Followers
+            <span className="text-white	font-bold	">{followers}</span> Followers
           </div>
         </div>
+
+        <div className="text-gray-500 text-base pt-2">{location}</div>
+        <div className="text-gray-500 text-base pt-2">{bio}</div>
       </div>
     </div>
   );

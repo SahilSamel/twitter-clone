@@ -4,12 +4,39 @@ import ProfileHeader2 from "@/components/Profile Components/ProfileHeader2";
 import ProfileLikes from "@/components/Profile Components/ProfileLikes";
 import ProfileMedia from "@/components/Profile Components/ProfileMedia";
 import ProfileReplies from "@/components/Profile Components/ProfileReplies";
-import { useState } from "react";
-import ListTweets from "@/layouts/ListTweetsLayout";
+import React, { useEffect, useState } from "react";
 import TweetList from "@/layouts/ListTweetsLayout";
+import router from "next/router";
+import GET from "@/api/GET/GET";
+interface userData{
+  userName: string,
+  userHandle: string,
+  bio: string,
+  location: string,
+  joinDate:Date,
+  followers: number,
+  following: number
+}
+
 
 const ProfilePage = () => {
   const [section, setSection] = useState(0);
+  const [userData, setUserData] = useState<userData | null>(null);
+  const { userId } = router.query;
+
+  const fetchUserData = () => {
+    GET(`/profile/getProfile?userId=${userId}`, function (err: any, data: any) {
+      if (err) {
+        console.log(err, "error at axios");
+      } else {
+        setUserData(data); 
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   let listProp = "";
   if (section === 0) {
@@ -25,8 +52,18 @@ const ProfilePage = () => {
   return (
     <div>
       <div className="border border-slate-600	">
-        <ProfileHeader />
-        <ProfileHeader2 />
+      {userData && <ProfileHeader userName={userData.userName} />}
+        {userData && (
+          <ProfileHeader2
+            userName={userData.userName}
+            userHandle={userData.userHandle}
+            bio={userData.bio}
+            location={userData.location}
+            followers={userData.followers}
+            following={userData.following}
+            joinDate={userData.joinDate}
+          />
+        )}
 
         <div className="flex justify-around mt-5">
           <div

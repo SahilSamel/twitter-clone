@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setToken } from '@/state/authStates';
+import { setToken, setUserId } from '@/state/authStates';
 import { setLastServedTimestamp } from '@/state/cacheStates';
 import { useRouter } from 'next/router';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -29,8 +29,9 @@ const Login = ({ toggleForm }: LoginProps) => {
       if (err) {
         console.log(err);
       } else {
-        const { token } = data;
+        const { token,uid } = data;
         dispatch(setToken(token));
+        dispatch(setUserId(uid));
         dispatch(setLastServedTimestamp(Date.now()));
         router.push('/');
       }

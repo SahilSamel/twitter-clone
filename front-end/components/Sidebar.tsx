@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearToken } from "@/state/authStates";
+import { clearToken, clearUserId } from "@/state/authStates";
 import { useRouter } from "next/router";
 import {
   AiOutlineHome,
@@ -14,14 +14,20 @@ import {
 import { useWindowSize } from "@/utils/Windowsize"; // Custom hook for getting window size
 import APIGET from "@/api/GET/APIGET";
 const Sidebar = () => {
+  const userId = useSelector((state:any) => state.auth.userId);
+
   const { width } = useWindowSize(); // Get window width using custom hook
   const isMobile = width <= 1222; // Define breakpoint for mobile screens
   const dispatch = useDispatch();
   const router = useRouter();
   const token = useSelector((state: any) => state.auth.token);
-
+  
+  const handleProfileClick = () => {
+    router.push(`/profile?userId=${userId}`);
+  };
   const handleLogout = () => {
     dispatch(clearToken());
+    dispatch(clearUserId());
     router.push("/");
   };
 
@@ -51,9 +57,7 @@ const Sidebar = () => {
         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
           isMobile ? "text-3xl" : "text-2xl"
         } hover:bg-blue-100 hover:text-blue-500`}
-        onClick={() => {
-          router.push("/profile");
-        }}
+        onClick={handleProfileClick}
       >
         <AiOutlineUser />
         {!isMobile && <span>Profile</span>}

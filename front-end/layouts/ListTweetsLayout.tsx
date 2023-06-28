@@ -3,7 +3,9 @@ import Tweet from "@/components/Tweet";
 import { useSelector, useDispatch } from "react-redux";
 import APIPOST from "@/api/POST/APIPOST";
 import APIGET from "@/api/GET/APIGET";
+import GET from "@/api/GET/GET"
 import { setTimer } from "@/state/cacheStates";
+import router from "next/router";
 
 interface TweetData {
   userId: string;
@@ -15,6 +17,7 @@ const TweetList = (props: any) => {
   const { list: initialList } = props;
   const [tweetDataList, setTweetDataList] = useState<TweetData[]>([]);
   const token = useSelector((state: any) => state.auth.token);
+  const { userId } = router.query;
   const lastServedTimestamp = useSelector(
     (state: any) => state.timer.lastServedTimestamp
   );
@@ -59,7 +62,7 @@ const TweetList = (props: any) => {
         }
       });
     } else {
-      APIGET(`/profile/${list}`, token, function (err: any, data: any) {
+      GET(`/profile/${list}?userId=${userId}`, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {

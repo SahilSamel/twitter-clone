@@ -10,11 +10,46 @@ admin.initializeApp({
 });
 // <-- End of Firebase admin SDK Initialization-->
 
+// <-- USER DATA RETRIEVAL FUNCTIONS -->
+
+// Get user data
+const getProfile = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const user = await User.findOne({ uid: userId }).exec();
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const profileData = {
+      userName: user.userName,
+      userHandle: user.userHandle,
+      followersCount: user.followersCount,
+      followeesCount: user.followeesCount,
+      bio: user.bio,
+      location: user.location,
+      profileImageURL: user.profileImageURL,
+      bgImageURL: user.bgImageURL,
+      joinDate: user.joinDate
+    };
+
+    res.status(200).json(profileData);
+  } catch (error) {
+    console.log("Error retrieving profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// <-- End of USER DATA RETRIEVAL FUNCTIONS -->
+
 // <-- SELF TWEET LISTING FUNCTIONS -->
 
 // Get Self tweets
 const selfTweets = (req, res) => {
-  const userId = req.userId.id;
+  const {userId} = req.query;
   Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
     if (err) {
       console.log(err);
@@ -36,7 +71,7 @@ const selfTweets = (req, res) => {
 
 // Get self replies
 const selfReplies = (req, res) => {
-  const userId = req.userId.id;
+  const {userId} = req.query;
   
   Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
     if (err) {
@@ -61,7 +96,7 @@ const selfReplies = (req, res) => {
 
 // Get self liked tweets
 const selfLiked = (req, res) => {
-  const userId = req.userId.id;
+  const {userId} = req.query;
   User.findOne({ uid:userId }, "liked", (err, userDocument) => {
     if (err) {
       console.log(err);
@@ -168,4 +203,4 @@ const deleteUser = async (req, res) => {
 
 // <-- End of DELETE USER FUNCTION -->
 
-export { selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate };
+export { getProfile, selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate };
