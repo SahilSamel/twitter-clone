@@ -8,6 +8,7 @@ type Inputs = {
   email: string;
   password: string;
   userHandle: string;
+  userName:string
 };
 
 
@@ -98,6 +99,25 @@ export default function SignUp({ toggleForm }: SignUpProps) {
               type="text"
               placeholder="User Handle"
               {...register("userHandle", { required: true })}
+            />
+            {errors.userHandle && (
+              <span className="text-red-500 text-xs">
+                This field is required
+              </span>
+            )}
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-slate-200	 text-sm font-bold mb-2"
+              htmlFor="userHandle"
+            >
+              User Name
+            </label>
+            <input
+              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight focus:outline-none focus:shadow-outline bg-black	"
+              type="text"
+              placeholder="Username"
+              {...register("userName", { required: true })}
             />
             {errors.userHandle && (
               <span className="text-red-500 text-xs">
