@@ -9,7 +9,7 @@ import timerReducer from '../state/cacheStates';
 import { FC } from 'react';
 
 const persistConfig = {
-  timeout: 500,
+  timeout: 2000,
   key: 'root',
   storage,
   whitelist: ['auth'],
