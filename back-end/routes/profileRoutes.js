@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { getProfile, selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate } from "../controller/profileController.js";
+import { getProfile, selfTweets, selfReplies, selfLiked, deleteUser,UpdateProfileData } from "../controller/profileController.js";
 const router = express.Router();
 
 // <-- USER DATA RETRIEVAL FUNCTIONALITIES -->
@@ -34,20 +34,9 @@ router.get("/getLiked", (req,res) => {
 
 //<--- PROFILE UPDATE FUNCTIONALITIES --->
 
-//Update bio
-router.post("/updateBio", verifyToken, (req, res) => {
-    updateBio(req, res);
-});
-
-//Update Location
-router.post("/updateLocation", verifyToken, (req, res) => {
-    updateLocation(req, res);
-});
-
-//Update Birth Date
-router.post("/updateBirthdate", verifyToken, (req, res) => {
-    updateBirthdate(req, res);
-});
+router.post("/updateProfile",verifyToken,(req,res)=>{
+    UpdateProfileData(req,res);
+})
 
 //<--- End of PROFILE UPDATE FUNCTIONALITIES --->
 

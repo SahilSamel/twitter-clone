@@ -1,9 +1,6 @@
 import Layout from "@/layouts/mainLayout";
 import ProfileHeader from "@/components/Profile Components/ProfileHeader";
 import ProfileHeader2 from "@/components/Profile Components/ProfileHeader2";
-import ProfileLikes from "@/components/Profile Components/ProfileLikes";
-import ProfileMedia from "@/components/Profile Components/ProfileMedia";
-import ProfileReplies from "@/components/Profile Components/ProfileReplies";
 import React, { useEffect, useState } from "react";
 import TweetList from "@/layouts/ListTweetsLayout";
 import router from "next/router";

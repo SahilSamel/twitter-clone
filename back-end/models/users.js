@@ -20,9 +20,9 @@ const usersSchema = new mongoose.Schema({
     }
   ],
   activityNum: { type: Number, default: 0 },                                     
-  bio: { type: String },
-  location: { type: String },
-  birthdate: { type: Date},
+  bio: { type: String,default:""},
+  location: { type: String,default:""},
+  birthdate: { type: Date,default:null},
   profileImageURL: { type: String },
   bgImageURL: { type: String },
   bookmarks: [

@@ -2,8 +2,7 @@ import React from 'react';
 import Layout from '@/layouts/mainLayout';
 import { useRouter } from "next/router";
 import { useSelector } from 'react-redux';
-import SettingsLayout from '@/layouts/SettingsLayout';
-
+import SettingsHome from '@/components/Setting Components/SettingHome';
 
 const Settings = () => {
   const token = useSelector((state:any) => state.auth.token);
@@ -14,7 +13,7 @@ const Settings = () => {
   }
 
   return (
-    <Layout middleComponent={SettingsLayout} />
+    <Layout middleComponent={SettingsHome} />
 
   );
 };

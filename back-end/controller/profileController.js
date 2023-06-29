@@ -33,6 +33,7 @@ const getProfile = async (req, res) => {
       location: user.location,
       profileImageURL: user.profileImageURL,
       bgImageURL: user.bgImageURL,
+      birthdate: user.birthdate,
       joinDate: month + " " + year
     };
 
@@ -120,6 +121,24 @@ const selfLiked = (req, res) => {
 
 // <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
+
+const UpdateProfileData = (req, res) => {
+  const userID = req.userId.id;
+  const { userName, bio, location,birthdate} = req.body;
+  const date = new Date(birthdate);
+  User.findOneAndUpdate({ uid: userID }, { userName, bio, location,birthdate:date }, (error, updatedUser) => {
+    if (error) {
+      res.status(500).json({ error: "Error updating profile" });
+    } else if (updatedUser) {
+      res.status(200).json({ message: "Updated" });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  });
+};
+
+
+
 //Update Location
 const updateLocation = (req, res) => {
   const uid = req.userId.id;
@@ -204,4 +223,4 @@ const deleteUser = async (req, res) => {
 
 // <-- End of DELETE USER FUNCTION -->
 
-export { getProfile, selfTweets, selfReplies, selfLiked, deleteUser, updateBio, updateLocation, updateBirthdate };
+export { getProfile, selfTweets, selfReplies, selfLiked, deleteUser,UpdateProfileData };
