@@ -14,8 +14,8 @@ interface userData{
   bio: string,
   location: string,
   joinDate:Date,
-  followers: number,
-  following: number
+  followersCount: number,
+  followeesCount: number
 }
 
 
@@ -59,8 +59,8 @@ const ProfilePage = () => {
             userHandle={userData.userHandle}
             bio={userData.bio}
             location={userData.location}
-            followers={userData.followers}
-            following={userData.following}
+            followers={userData.followersCount}
+            following={userData.followeesCount}
             joinDate={userData.joinDate}
           />
         )}
