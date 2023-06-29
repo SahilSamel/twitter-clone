@@ -13,7 +13,7 @@ interface userData{
   userHandle: string,
   bio: string,
   location: string,
-  joinDate:Date,
+  joinDate: string,
   followersCount: number,
   followeesCount: number
 }

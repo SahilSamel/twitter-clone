@@ -24,10 +24,11 @@ const checkHandle = (userHandle) => {
 };
 
 // Database Entry for User
-const registerUser = (uid, userHandle) => {
+const registerUser = (uid, userHandle,userName) => {
   const newUser = new User({
     uid,
     userHandle,
+    userName,
     joinDate: new Date(),
   });
   const session = driver.session(); // neo4j session creation
@@ -55,7 +56,7 @@ const registerUser = (uid, userHandle) => {
 // Creating new User entry
 const createUser = (req, res) => {
   const auth = getAuth();
-  const { email, password, userHandle } = req.body;
+  const { email, password, userHandle,userName}  = req.body;
 
   checkHandle(userHandle) // First check for duplicate userhandle
     .then(() => {
@@ -66,7 +67,7 @@ const createUser = (req, res) => {
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
 
-      registerUser(uid, userHandle); // Make mongo and neo4j entry
+      registerUser(uid, userHandle,userName); // Make mongo and neo4j entry
       res.status(201).json({ token, uid }); // Pass auth token as response
     })
     .catch((error) => {

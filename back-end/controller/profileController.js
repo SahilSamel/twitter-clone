@@ -22,7 +22,8 @@ const getProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    const year = user.joinDate.getFullYear();
+    const month = user.joinDate.toLocaleString("default", { month: "long" });;
     const profileData = {
       userName: user.userName,
       userHandle: user.userHandle,
@@ -32,7 +33,7 @@ const getProfile = async (req, res) => {
       location: user.location,
       profileImageURL: user.profileImageURL,
       bgImageURL: user.bgImageURL,
-      joinDate: user.joinDate
+      joinDate: month + " " + year
     };
 
     res.status(200).json(profileData);
