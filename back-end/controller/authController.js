@@ -68,7 +68,7 @@ const createUser = (req, res) => {
       const uid = user.uid;
 
       registerUser(uid, userHandle,userName); // Make mongo and neo4j entry
-      res.status(201).json({ token, uid }); // Pass auth token as response
+      res.status(201).json({ token, uid, userHandle }); // Pass auth token as response
     })
     .catch((error) => {
       res.status(409).json({ error: error.message });
@@ -84,7 +84,15 @@ const signIn = (req, res) => {
       const user = userCredential.user;
       const token = jwt.sign({ id: user.uid }, process.env.JWT_SECRET);
       const uid = user.uid;
-      res.status(201).json({ token, uid });
+
+      User.findOne({uid:uid},(err,user)=>{
+        if(err){
+          res.status(500)
+        }else{
+          const userHandle = user.userHandle
+          res.status(201).json({ token, uid , userHandle});
+        }
+      })
     })
     .catch((error) => {
       const errorCode = error.code;

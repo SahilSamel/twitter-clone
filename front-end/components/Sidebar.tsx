@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearToken, clearUserId } from "@/state/authStates";
+import { clearToken, clearUserHandle,clearUserId } from "@/state/authStates";
 import { useRouter } from "next/router";
 import {
   AiOutlineHome,
@@ -21,13 +21,15 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const token = useSelector((state: any) => state.auth.token);
-  
+  const userHandle = useSelector((state: any) => state.auth.userHandle);  
+  console.log(userHandle);
   const handleProfileClick = () => {
-    router.push(`/profile?userId=${userId}`);
+    router.push(`/profile/${userHandle}`);
   };
   const handleLogout = () => {
     dispatch(clearToken());
     dispatch(clearUserId());
+    dispatch(clearUserHandle());
     router.push("/");
   };
 

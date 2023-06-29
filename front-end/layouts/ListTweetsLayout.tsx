@@ -17,7 +17,8 @@ const TweetList = (props: any) => {
   const { list: initialList } = props;
   const [tweetDataList, setTweetDataList] = useState<TweetData[]>([]);
   const token = useSelector((state: any) => state.auth.token);
-  const { userId } = router.query;
+  // const { userId } = router.query;
+  const userId = useSelector((state: any) => state.auth.userId);
   const lastServedTimestamp = useSelector(
     (state: any) => state.timer.lastServedTimestamp
   );

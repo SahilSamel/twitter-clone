@@ -22,10 +22,8 @@ interface userData{
 const ProfilePage = () => {
   const [section, setSection] = useState(0);
   const [userData, setUserData] = useState<userData | null>(null);
-  const { userId } = router.query;
-
   const fetchUserData = () => {
-    GET(`/profile/getProfile?userId=${userId}`, function (err: any, data: any) {
+    GET(`/profile/getProfile?userHandle=${router.query.userhandle}`, function (err: any, data: any) {
       if (err) {
         console.log(err, "error at axios");
       } else {

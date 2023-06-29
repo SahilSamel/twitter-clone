@@ -14,10 +14,10 @@ admin.initializeApp({
 
 // Get user data
 const getProfile = async (req, res) => {
-  const { userId } = req.query;
+  const { userHandle } = req.query;
 
   try {
-    const user = await User.findOne({ uid: userId }).exec();
+    const user = await User.findOne({ userHandle: userHandle }).exec();
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
