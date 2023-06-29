@@ -3,8 +3,6 @@ import verifyToken from "../middleware/verifyToken.js";
 import {
   follow,
   unfollow,
-  bookmark,
-  unbookmark,
   refreshEvent,
   scrollDownEvent,
   timeoutEvent,
@@ -28,16 +26,7 @@ router.post("/unfollow", verifyToken, (req, res) => {
 
 // <-- BOOKMARKING FUNCTIONALITIES -->
 
-//Create bookmark
-router.post("/bookmark", verifyToken, (req, res) => {
-  bookmark(req, res);
-});
-
-//Delete bookmark
-router.post("/unbookmark", verifyToken, (req, res) => {
-  unbookmark(req, res);
-});
-
+// Get bookmarks
 router.post("/getBookmarks", verifyToken, (req, res) => {
   getBookmarks(req, res);
 });

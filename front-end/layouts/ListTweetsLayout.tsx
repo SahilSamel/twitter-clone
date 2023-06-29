@@ -52,7 +52,7 @@ const TweetList = (props: any) => {
           dispatch(setTimer(data.timer)); 
         }
       });
-    } else if(list ==="bookmarks"){
+    } else if(list ==="getBookmarks"){
       APIPOST(`/user/${list}`, token, {},  function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");

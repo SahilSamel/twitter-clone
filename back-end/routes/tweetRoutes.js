@@ -1,6 +1,6 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
-import { createTweet, deleteTweet, fetchTweet, createReply, deleteReply, likeTweet, dislikeTweet } from "../controller/tweetController.js";
+import { createTweet, deleteTweet,bookmark, unbookmark, fetchTweet, createReply, deleteReply, likeTweet, dislikeTweet } from "../controller/tweetController.js";
 const router = express.Router();
 
 //<--- TWEET CREATION/DELETION FUNCTIONALITIES --->
@@ -32,6 +32,19 @@ router.post("/deleteReply", verifyToken, (req, res) => {
 
 //<--- End of TWEET CREATION FUNCTIONALITIES --->
 
+// <-- BOOKMARKING FUNCTIONALITIES -->
+
+//Create bookmark
+router.post("/bookmark", verifyToken, (req, res) => {
+  bookmark(req, res);
+});
+
+//Delete bookmark
+router.post("/unbookmark", verifyToken, (req, res) => {
+  unbookmark(req, res);
+});
+
+// <-- End of BOOKMARKING FUNCTIONALITIES -->
 
 // <-- TWEET LIKE/DISLIKE FUNCTIONALITIES -->
 router.post("/like", verifyToken, (req, res) => {

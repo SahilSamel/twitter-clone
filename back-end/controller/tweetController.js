@@ -176,13 +176,58 @@ const deleteReply = (req, res) => {
 
 //  <--- End of TWEET CREATION FUNCTIONS --->
 
-// <-- LIKE/DISLIKE FUNCTIONS -->
+// <-- BOOKMARK FUNCTIONS -->
 
-// Like tweet
-const likeTweet = (req, res) => {
+//Create a bookmark
+const bookmark = (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
+  User.findOneAndUpdate(
+    { uid: userId },
+    {
+      $push: {
+        bookmarks: {
+          userId: tweetUserId,
+          tweetId: tweetId
+        }
+      }
+    }
+  )
+    .then(() => {
+      res.status(200).json({ message: "Tweet bookmarked successfully" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error while bookmarking tweet" });
+    });
+};
 
+
+//Delete a bookmark
+const unbookmark = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+  
+  User.findOneAndUpdate(
+    { uid: userId },
+    { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
+    )
+    .then(() => {
+      res.status(200).json({ message: "Tweet unbookmarked successfully" });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Error while bookmarking tweet" });
+    });
+  };
+
+  // <-- End of BOOKMARK FUNCTIONS -->
+  
+  // <-- LIKE/DISLIKE FUNCTIONS -->
+  
+  // Like tweet
+  const likeTweet = (req, res) => {
+    const userId = req.userId.id;
+    const { tweetUserId, tweetId } = req.body;
+    
   Tweet.findOneAndUpdate(
     { userId: tweetUserId, "tweets._id": tweetId },
     { $push: { "tweets.$.likes": { userId: userId } } }
@@ -235,6 +280,8 @@ const dislikeTweet = (req, res) => {
 export {
   createTweet,
   deleteTweet,
+  bookmark,
+  unbookmark,
   fetchTweet,
   createReply,
   deleteReply,
