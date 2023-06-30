@@ -1,13 +1,10 @@
+import app from "@/constants/firebaseconfig"
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getAuth } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 
 const storage = getStorage();
-const auth = getAuth();
-
-export const uploadFile = async (file) => {
+export const uploadFile = async (file,userId) => {
   try {
-    const userId = useSelector((state) => state.auth.userId);
     const filename = `${Date.now()}_${file.name}`;
     const storageRef = ref(storage, `${userId}/media/${filename}`);
 

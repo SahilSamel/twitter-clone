@@ -19,6 +19,8 @@ const CreateTweet = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const token = useSelector((state:any) => state.auth.token);
+  const userId = useSelector((state:any) => state.auth.userId);
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -49,7 +51,7 @@ const CreateTweet = () => {
     const fileUrls: string[] = [];
     for (const preview of imagePreviews) {
       const file = await fetch(preview.url).then((res) => res.blob());
-      const fileUrl = await uploadFile(file);
+      const fileUrl = await uploadFile(file,userId);
       fileUrls.push(fileUrl);
     }
     return fileUrls;

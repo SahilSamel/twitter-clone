@@ -98,7 +98,11 @@ const TweetList = (props: any) => {
 
   useEffect(() => {
     fetchTweetList();
-  }, [refreshCount,userId]);
+  }, [refreshCount]);
+
+  useEffect(() => {
+    fetchTweetList();
+  }, [userId]);
 
   // useEffect(() => {
   //   if (listContainerRef.current) {
