@@ -39,4 +39,5 @@ export const {
   setUserHandle,
   clearUserHandle,
 } = authSlice.actions;
+
 export default authSlice.reducer;

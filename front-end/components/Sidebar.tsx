@@ -22,7 +22,6 @@ const Sidebar = () => {
   const router = useRouter();
   const token = useSelector((state: any) => state.auth.token);
   const userHandle = useSelector((state: any) => state.auth.userHandle);  
-  console.log(userHandle);
   const handleProfileClick = () => {
     router.push(`/profile/${userHandle}`);
   };

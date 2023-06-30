@@ -9,10 +9,9 @@ import timerReducer from '../state/cacheStates';
 import { FC } from 'react';
 
 const persistConfig = {
-  timeout: 2000,
+  timeout: 500,
   key: 'root',
   storage,
-  whitelist: ['auth'],
 };
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
@@ -25,12 +24,12 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Disable serializability checks
+      serializableCheck: false,
     }),
 });
 
+export const persistor = persistStore(store); 
 const MyApp = ({ Component, pageProps }) => {
-  const persistor = persistStore(store, { timeout: 43200 }); // Increase timeout to 10 seconds
 
   return (
     <Provider store={store}>

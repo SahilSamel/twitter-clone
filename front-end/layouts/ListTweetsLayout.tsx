@@ -3,7 +3,7 @@ import Tweet from "@/components/Tweet";
 import { useSelector, useDispatch } from "react-redux";
 import APIPOST from "@/api/POST/APIPOST";
 import APIGET from "@/api/GET/APIGET";
-import GET from "@/api/GET/GET"
+import GET from "@/api/GET/GET";
 import { setTimer } from "@/state/cacheStates";
 import router from "next/router";
 
@@ -14,10 +14,20 @@ interface TweetData {
 }
 
 const TweetList = (props: any) => {
-  const { list: initialList } = props;
+  const { list: initialList, userIdprop } = props;
+  const currentUserId = useSelector((state: any) => state.auth.userId);
+  var userId:string;
+
+  if(userIdprop!=undefined) userId =  userIdprop;
+  else userId=currentUserId
+
+
+
   const [tweetDataList, setTweetDataList] = useState<TweetData[]>([]);
   const token = useSelector((state: any) => state.auth.token);
-  const userId = useSelector((state: any) => state.auth.userId);
+  
+
+
   const lastServedTimestamp = useSelector(
     (state: any) => state.timer.lastServedTimestamp
   );
@@ -28,14 +38,13 @@ const TweetList = (props: any) => {
 
   const fetchTweetList = () => {
     if (list === "refresh") {
-      setList("scrolldown"); 
+      setList("scrolldown");
       const jsonData = { lastServedTimestamp };
       APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
           setTweetDataList(data.refreshCache);
-          
         }
       });
     } else if (list === "scrolldown") {
@@ -48,17 +57,16 @@ const TweetList = (props: any) => {
             ...prevTweetDataList,
             ...data.scrollDownCache,
           ]);
-          
-          dispatch(setTimer(data.timer)); 
+
+          dispatch(setTimer(data.timer));
         }
       });
-    } else if(list ==="getBookmarks"){
-      APIPOST(`/user/${list}`, token, {},  function (err: any, data: any) {
+    } else if (list === "getBookmarks") {
+      APIPOST(`/user/${list}`, token, {}, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
           setTweetDataList(data.bookmarks);
-          
         }
       });
     } else {
@@ -90,7 +98,7 @@ const TweetList = (props: any) => {
 
   useEffect(() => {
     fetchTweetList();
-  }, [ refreshCount]);
+  }, [refreshCount,userId]);
 
   // useEffect(() => {
   //   if (listContainerRef.current) {
@@ -105,11 +113,14 @@ const TweetList = (props: any) => {
   // }, []);
 
   return (
-    <div ref={listContainerRef} style={{ overflowY: "scroll", height: "500px" }}>
+    <div
+      ref={listContainerRef}
+      style={{ overflowY: "scroll", height: "500px" }}
+    >
       {list === "refresh" || list === "scrolldown" ? (
         <button onClick={handleRefresh}>Refresh</button>
       ) : null}
-      {(tweetDataList === undefined || tweetDataList.length === 0) ? (
+      {tweetDataList === undefined || tweetDataList.length === 0 ? (
         <p>No tweets to display</p>
       ) : (
         tweetDataList.map((tweetData, index) => (
