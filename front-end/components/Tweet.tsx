@@ -18,13 +18,18 @@ import APIPOST from "@/api/POST/APIPOST";
 
 interface TweetData {
   text: string;
-  userhandle: string;
+  userHandle: string;
+  userName: string;
   mediaURL?: string;
   liked: boolean;
   bookmarked: boolean;
   likes: string[];
   derivedUserId?: string; // Added derivedUserId property
   derivedTweetId?: string; // Added derivedTweetId property
+  type:number;
+  threadId:string;
+  timestamp:string;
+
 }
 
 interface TweetProps {
@@ -109,14 +114,18 @@ const Tweet: React.FC<TweetProps> = ({
   }
 
   const {
+    type,
     text,
-    userhandle,
     mediaURL,
-    liked,
-    bookmarked,
-    likes,
     derivedUserId,
     derivedTweetId,
+    threadId,
+    timestamp,
+    likes,
+    userHandle,
+    liked,
+    bookmarked,
+    userName,
   } = tweetData;
 
   return (
@@ -150,7 +159,7 @@ const Tweet: React.FC<TweetProps> = ({
           )}
         </div>
         <div className="pl-5 pt-3 max-w-lg">
-          <div className=" mb-2">@{userhandle}</div>
+          <div className=" mb-2">@{userHandle}</div>
           <div className="text-neutral-50 mb-2">{text}</div>
           {mediaURL && (
             <div className="mb-3">

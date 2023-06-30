@@ -33,11 +33,11 @@ const createTweet = (req, res) => {
             $push: {
               tweets: {
                 $each: [newTweet],
-                $position: 0
-              }
+                $position: 0,
+              },
             },
-            
-            $set: { latestTweetTimestamp: new Date() } 
+
+            $set: { latestTweetTimestamp: new Date() },
           },
           { new: true, upsert: true }
         )
@@ -60,7 +60,6 @@ const createTweet = (req, res) => {
       });
   });
 };
-
 
 // Delete Tweet
 const deleteTweet = (req, res) => {
@@ -96,32 +95,45 @@ const fetchTweet = (req, res) => {
     }
 
     if (!userTweet) {
-      return res.status(404).json({ error: 'User Not there' });
+      return res.status(404).json({ error: 'User Not Found' });
     }
 
-    const tweet = userTweet.tweets.id(tweetId); 
-    
-    if (!tweet) {
-      return res.status(404).json({ error: 'Tweet not in user' });
-    }
+    User.findOne({ uid: userId }, (err, user) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+      }
 
-    const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId, timestamp, likes } = tweet;
-    
-    const tweetData = {
-      type,
-      text,
-      mediaURL,
-      derivedUserId,
-      derivedTweetId,
-      threadId,
-      timestamp,
-      likes
-    };
+      if (!user) {
+        return res.status(404).json({ error: 'User Not Found' });
+      }
 
-    res.json(tweetData);
+      const tweet = userTweet.tweets.id(tweetId);
+
+      if (!tweet) {
+        return res.status(404).json({ error: 'Tweet not found' });
+      }
+
+      const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId, timestamp, likes } = tweet;
+      const { userHandle, userName } = user;
+
+      const tweetData = {
+        type,
+        text,
+        mediaURL,
+        derivedUserId,
+        derivedTweetId,
+        threadId,
+        timestamp,
+        likes,
+        userHandle,
+        userName
+      };
+
+      res.json(tweetData);
+    });
   });
 };
-
 
 
 
@@ -203,9 +215,9 @@ const bookmark = (req, res) => {
       $push: {
         bookmarks: {
           userId: tweetUserId,
-          tweetId: tweetId
-        }
-      }
+          tweetId: tweetId,
+        },
+      },
     }
   )
     .then(() => {
@@ -216,33 +228,32 @@ const bookmark = (req, res) => {
     });
 };
 
-
 //Delete a bookmark
 const unbookmark = (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
-  
+
   User.findOneAndUpdate(
     { uid: userId },
     { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
-    )
+  )
     .then(() => {
       res.status(200).json({ message: "Tweet unbookmarked successfully" });
     })
     .catch((error) => {
       res.status(500).json({ error: "Error while bookmarking tweet" });
     });
-  };
+};
 
-  // <-- End of BOOKMARK FUNCTIONS -->
-  
-  // <-- LIKE/DISLIKE FUNCTIONS -->
-  
-  // Like tweet
-  const likeTweet = (req, res) => {
-    const userId = req.userId.id;
-    const { tweetUserId, tweetId } = req.body;
-    
+// <-- End of BOOKMARK FUNCTIONS -->
+
+// <-- LIKE/DISLIKE FUNCTIONS -->
+
+// Like tweet
+const likeTweet = (req, res) => {
+  const userId = req.userId.id;
+  const { tweetUserId, tweetId } = req.body;
+
   Tweet.findOneAndUpdate(
     { userId: tweetUserId, "tweets._id": tweetId },
     { $push: { "tweets.$.likes": { userId: userId } } }
