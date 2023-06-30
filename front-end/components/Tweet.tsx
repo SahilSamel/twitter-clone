@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import ReactTooltip from "react-tooltip";
 import {
   AiOutlineHeart,
   AiFillHeart,
@@ -15,6 +14,8 @@ import { LuEdit3 } from "react-icons/lu";
 import APIGET from "@/api/GET/APIGET";
 import { useSelector } from "react-redux";
 import APIPOST from "@/api/POST/APIPOST";
+import { useRouter } from 'next/router';
+
 
 interface TweetData {
   text: string;
@@ -26,10 +27,9 @@ interface TweetData {
   likes: string[];
   derivedUserId?: string; // Added derivedUserId property
   derivedTweetId?: string; // Added derivedTweetId property
-  type:number;
-  threadId:string;
-  timestamp:string;
-
+  type: number;
+  threadId: string;
+  timestamp: string;
 }
 
 interface TweetProps {
@@ -47,6 +47,7 @@ const Tweet: React.FC<TweetProps> = ({
   const token = useSelector((state: any) => state.auth.token);
   const [showActions, setShowActions] = useState(false);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   const fetchTweetData = () => {
     APIGET(
@@ -159,7 +160,15 @@ const Tweet: React.FC<TweetProps> = ({
           )}
         </div>
         <div className="pl-5 pt-3 max-w-lg">
-          <div className=" mb-2">@{userHandle}</div>
+          <div className="mb-2">
+            <span style={{ color: "white" }}>{userName}</span>{" "}
+            <button
+              onClick={() => router.push(`/profile/${userHandle}`)}
+              className="text-blue-500 hover:underline cursor-pointer"
+            >
+              @{userHandle}
+            </button>
+          </div>
           <div className="text-neutral-50 mb-2">{text}</div>
           {mediaURL && (
             <div className="mb-3">
@@ -170,7 +179,6 @@ const Tweet: React.FC<TweetProps> = ({
               />
             </div>
           )}
-
           <div className=" pb-3 flex items-center  space-x-4">
             <button
               className="flex items-center text-lg"
