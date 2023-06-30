@@ -104,9 +104,24 @@ const fetchTweet = (req, res) => {
     if (!tweet) {
       return res.status(404).json({ error: 'Tweet not in user' });
     }
-    res.json(tweet);
+
+    const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId, timestamp, likes } = tweet;
+    
+    const tweetData = {
+      type,
+      text,
+      mediaURL,
+      derivedUserId,
+      derivedTweetId,
+      threadId,
+      timestamp,
+      likes
+    };
+
+    res.json(tweetData);
   });
 };
+
 
 
 

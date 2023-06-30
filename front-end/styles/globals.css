@@ -12,5 +12,5 @@ input {
 }
 
 .drop-shadow-white:hover {
-    filter: drop-shadow(0 0 0.5rem #fff);
+    filter: drop-shadow(0 0 0.5rem #868686);
 }

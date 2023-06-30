@@ -22,14 +22,22 @@ interface TweetData {
   mediaURL?: string;
   liked: boolean;
   bookmarked: boolean;
+  likes: string[];
+  derivedUserId?: string; // Added derivedUserId property
+  derivedTweetId?: string; // Added derivedTweetId property
 }
 
 interface TweetProps {
   userId: string;
   tweetId: string;
+  originalTweet?: boolean; // Added originalTweet prop
 }
 
-const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
+const Tweet: React.FC<TweetProps> = ({
+  userId,
+  tweetId,
+  originalTweet = false,
+}: TweetProps) => {
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
   const token = useSelector((state: any) => state.auth.token);
   const [showActions, setShowActions] = useState(false);
@@ -47,7 +55,7 @@ const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
             ...data,
             liked: data.action === "like",
             bookmarked: data.action === "bookmark",
-          }); // Set liked and bookmarked fields based on action
+          });
         }
       }
     );
@@ -100,74 +108,123 @@ const Tweet: React.FC<TweetProps> = ({ userId, tweetId }: TweetProps) => {
     return <div>Loading...</div>;
   }
 
-  const { text, userhandle, mediaURL, liked, bookmarked } = tweetData;
+  const {
+    text,
+    userhandle,
+    mediaURL,
+    liked,
+    bookmarked,
+    likes,
+    derivedUserId,
+    derivedTweetId,
+  } = tweetData;
 
   return (
-    <div className="border border-slate-700 border-b-0 text-neutral-500">
-      <div className="px-5 py-3">
-        <div className=" mb-2">@{userhandle}</div>
-        <div className="text-neutral-50 mb-2">{text}</div>
-        {mediaURL && <img src={mediaURL} alt="Tweet Media" className="mb-2" />}
+    <div>
+      {derivedUserId && derivedTweetId && (
+        <Tweet
+          key={0}
+          userId={derivedUserId}
+          tweetId={derivedTweetId}
+          originalTweet // Pass originalTweet prop to derived tweets
+        />
+      )}
+      <div
+        className={`flex border border-b-0 border-l-0 border-r-0 border-slate-700 ${
+          derivedUserId ? "border-t-0" : ""
+        } text-neutral-500`}
+      >
+        <div className="pl-4 pt-3">
+          <img
+            className="border border-0 rounded-full"
+            src="https://pbs.twimg.com/profile_images/1670639644378005508/Flv2gLEd_400x400.jpg"
+            height={40}
+            width={40}
+            alt="Profile Avatar"
+          />
 
-        <div className="flex items-center  space-x-4">
-          <button
-            className="flex items-center text-lg"
-            onClick={() => updateTweetData(liked ? "dislike" : "like")}
-          >
-            {liked ? (
-              <AiFillHeart className=" text-red-500 mr-1" />
-            ) : (
-              <AiOutlineHeart className="mr-1" />
-            )}
-          </button>
-          <button
-            className="flex items-center text-sm"
-            onClick={() =>
-              updateTweetData(bookmarked ? "unbookmark" : "bookmark")
-            }
-          >
-            {bookmarked ? (
-              <BsFillBookmarkFill className="mr-1 text-blue-500" />
-            ) : (
-              <BsBookmark className="mr-1" />
-            )}
-          </button>
-          <button
-            className="flex items-center text-lg"
-            data-tip="Retweet and Quote" // Tooltip text for combined Retweet and Quote button
-            onClick={() => setShowActions(!showActions)}
-          >
-            <FaRetweet className="mr-1" />
-          </button>
-          {showActions && (
-            <div className="relative">
-              <div
-                ref={actionsRef}
-                className="absolute bg-black text-neutral-500 shadow rounded-md p-2 ring ring-slate-800 ring-offset-1 ring-offset-slate-1 dark:ring-offset-slate-700"
-                style={{
-                  top: "100%",
-                  left: "-20px",
-                  zIndex: 1000,
-                }}
-              >
-                <button className=" drop-shadow-white flex items-center text-sm mb-2">
-                  <FaRetweet className="mr-1" />
-                  Retweet
-                </button>
-                <button className=" drop-shadow-white flex items-center text-sm">
-                  <LuEdit3 className="mr-1" />
-                  Quote
-                </button>
-              </div>
+          {originalTweet && (
+            <div className="h-full" style={{ height: "calc(100% - 40px)" }}>
+              <div className="relative bg-slate-800 h-full w-0.5 left-1/2 top-2"></div>
+            </div>
+          )}
+        </div>
+        <div className="pl-5 pt-3 max-w-lg">
+          <div className=" mb-2">@{userhandle}</div>
+          <div className="text-neutral-50 mb-2">{text}</div>
+          {mediaURL && (
+            <div className="mb-3">
+              <img
+                className="border border-0 rounded-2xl"
+                src={mediaURL}
+                alt="Tweet Media"
+              />
             </div>
           )}
 
-          <button className="flex items-center text-lg">
-            <BiMessageRounded className="mr-1" />
-          </button>
-          <button className="flex items-center text-base">
-            <FiShare className="mr-1" />
-          </button>
+          <div className=" pb-3 flex items-center  space-x-4">
+            <button
+              className="flex items-center text-lg"
+              onClick={() => updateTweetData(liked ? "dislike" : "like")}
+            >
+              {liked ? (
+                <AiFillHeart className=" text-red-500" />
+              ) : (
+                <AiOutlineHeart className="" />
+              )}
+            </button>
+            <div className="text-sm">{likes.length}</div>
+            <button
+              className="flex items-center text-sm"
+              onClick={() =>
+                updateTweetData(bookmarked ? "unbookmark" : "bookmark")
+              }
+            >
+              {bookmarked ? (
+                <BsFillBookmarkFill className="mr-1 text-blue-500" />
+              ) : (
+                <BsBookmark className="mr-1" />
+              )}
+            </button>
+
+            <button
+              className="flex items-center text-lg"
+              data-tip="Retweet and Quote"
+              onClick={() => setShowActions(!showActions)}
+            >
+              <FaRetweet className="mr-1" />
+            </button>
+
+            {showActions && (
+              <div className="relative">
+                <div
+                  ref={actionsRef}
+                  className="absolute bg-black text-neutral-500 shadow rounded-md p-2 ring ring-slate-800 ring-offset-1 ring-offset-slate-1 dark:ring-offset-slate-700"
+                  style={{
+                    top: "100%",
+                    left: "-20px",
+                    zIndex: 1000,
+                  }}
+                >
+                  <button className=" drop-shadow-white flex items-center text-sm mb-2">
+                    <FaRetweet className="mr-1" />
+                    Retweet
+                  </button>
+                  <button className=" drop-shadow-white flex items-center text-sm">
+                    <LuEdit3 className="mr-1" />
+                    Quote
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <button className="flex items-center text-lg">
+              <BiMessageRounded className="mr-1" />
+            </button>
+            <button className="flex items-center text-base">
+              <FiShare className="mr-1" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
