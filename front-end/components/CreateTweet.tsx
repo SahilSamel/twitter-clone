@@ -5,24 +5,33 @@ import { GrEmoji } from "react-icons/gr";
 import { MdOutlineGifBox } from "react-icons/md";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import APIPOST from "@/api/POST/APIPOST";
-import { useSelector } from "react-redux";
-useSelector
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
+import { uploadFile } from "@/utils/uploadImage";
 interface ImagePreview {
   id: string;
   url: string;
 }
 
 const CreateTweet = () => {
-
   const [text, setText] = useState("");
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const token = useSelector((state:any) => state.auth.token);
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setText(event.target.value);
   };
 
+  const removeImagePreview = (id: string) => {
+    setImagePreviews((prevPreviews) =>
+      prevPreviews.filter((preview) => preview.id !== id)
+    );
+  };
+  
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -36,34 +45,36 @@ const CreateTweet = () => {
     }
   };
 
-  const removeImagePreview = (id: string) => {
-    setImagePreviews((prevPreviews) =>
-      prevPreviews.filter((preview) => preview.id !== id)
-    );
+  const uploadFilesToFirebase = async (): Promise<string[]> => {
+    const fileUrls: string[] = [];
+    for (const preview of imagePreviews) {
+      const file = await fetch(preview.url).then((res) => res.blob());
+      const fileUrl = await uploadFile(file);
+      fileUrls.push(fileUrl);
+    }
+    return fileUrls;
   };
 
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }, [text]);
-
-  const token = useSelector((state: any) => state.auth.token);
-  const onSubmit = () => {
-    APIPOST("/compose/tweet",token,{
-        type:0,
-        text:text
-    },
-    function(err:any,data:any){
-        if(err){
-            console.log(err)
-        }else{
-            setText("");
-            setImagePreviews([]);
+  const onSubmit = async () => {
+    const fileURLs = await uploadFilesToFirebase();
+    APIPOST(
+      "/compose/tweet",
+      token,
+      {
+        type: 0,
+        text: text,
+        mediaURL: fileURLs[0] || "",
+      },
+      function (err: any, data: any) {
+        if (err) {
+          console.log(err);
+        } else {
+          setText("");
+          setImagePreviews([]);
+          router.push("/"); // Redirect to home page after successful tweet creation
         }
-    })
+      }
+    );
   };
 
   return (
@@ -123,7 +134,9 @@ const CreateTweet = () => {
         <button
           className="text-base font-bold px-4 bg-sky-500 py-2 rounded-full ml-auto disabled:brightness-50"
           disabled={!text && imagePreviews.length === 0}
-          onClick={()=>{onSubmit()}}
+          onClick={() => {
+            onSubmit();
+          }}
         >
           Tweet
         </button>
