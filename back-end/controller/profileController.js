@@ -96,6 +96,31 @@ const selfReplies = (req, res) => {
   });
 };
 
+const selfTweetsWithMedia = (req, res) => {
+  const { userId } = req.query;
+
+  Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    if (!tweetDocument) {
+      return res.status(404).json({ error: "No tweets found for the user" });
+    }
+
+    const profileDisplayTweets = tweetDocument.tweets
+      .filter((tweet) => tweet.mediaURL !== "")
+      .map((tweet) => ({
+        userId: userId,
+        tweetId: tweet._id,
+      }));
+      console.log("Nigga")
+    return res.status(200).json({ profileDisplayTweets });
+  });
+};
+
+
 // Get self liked tweets
 const selfLiked = (req, res) => {
   const {userId} = req.query;
@@ -180,4 +205,4 @@ const getUserId = (req, res) => {
   });
 };
 
-export { getProfile, selfTweets, selfReplies, selfLiked, deleteUser,UpdateProfileData,getUserId };
+export { getProfile, selfTweets, selfReplies, selfTweetsWithMedia, selfLiked, deleteUser,UpdateProfileData,getUserId };

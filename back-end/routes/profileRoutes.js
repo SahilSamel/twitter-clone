@@ -4,6 +4,7 @@ import {
   getProfile,
   selfTweets,
   selfReplies,
+  selfTweetsWithMedia,
   selfLiked,
   deleteUser,
   UpdateProfileData,
@@ -30,6 +31,11 @@ router.get("/getTweets", (req, res) => {
 //Get self replies
 router.get("/getReplies", (req, res) => {
   selfReplies(req, res);
+});
+
+//Get self tweets with media
+router.get("/getMedia", (req, res) => {
+  selfTweetsWithMedia(req, res);
 });
 
 //Get self liked tweets
