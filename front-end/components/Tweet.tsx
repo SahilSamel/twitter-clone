@@ -11,22 +11,24 @@ import { FiShare } from "react-icons/fi";
 import { BiMessageRounded } from "react-icons/bi";
 import { FaRetweet } from "react-icons/fa";
 import { LuEdit3 } from "react-icons/lu";
-import APIGET from "@/api/GET/APIGET";
+import GET from "@/api/GET/GET";
 import { useSelector } from "react-redux";
 import APIPOST from "@/api/POST/APIPOST";
-import { useRouter } from 'next/router';
-
+import { useRouter } from "next/router";
+import Bookmarks from "@/pages/bookmarks";
 
 interface TweetData {
   text: string;
   userHandle: string;
   userName: string;
   mediaURL?: string;
-  liked: boolean;
-  bookmarked: boolean;
-  likes: string[];
-  derivedUserId?: string; // Added derivedUserId property
-  derivedTweetId?: string; // Added derivedTweetId property
+  likes: number;
+  bookmarks: number;
+  replies: number;
+  likedBy: boolean;
+  bookmarkedBy: boolean;
+  derivedUserId?: string;
+  derivedTweetId?: string;
   type: number;
   threadId: string;
   timestamp: string;
@@ -35,7 +37,7 @@ interface TweetData {
 interface TweetProps {
   userId: string;
   tweetId: string;
-  originalTweet?: boolean; // Added originalTweet prop
+  originalTweet?: boolean;
 }
 
 const Tweet: React.FC<TweetProps> = ({
@@ -45,22 +47,20 @@ const Tweet: React.FC<TweetProps> = ({
 }: TweetProps) => {
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
   const token = useSelector((state: any) => state.auth.token);
+  const currentUser = useSelector((state: any) => state.auth.userId);
   const [showActions, setShowActions] = useState(false);
   const actionsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const fetchTweetData = () => {
-    APIGET(
-      `/compose/getTweet?userId=${userId}&tweetId=${tweetId}`,
-      token,
+    GET(
+      `/compose/getTweet?userId=${currentUser}&tweetUserId=${userId}&tweetId=${tweetId}`,
       function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
           setTweetData({
             ...data,
-            liked: data.action === "like",
-            bookmarked: data.action === "bookmark",
           });
         }
       }
@@ -79,10 +79,19 @@ const Tweet: React.FC<TweetProps> = ({
         } else {
           setTweetData((prevData) => {
             if (prevData) {
+              let updatedLikedBy = prevData.likedBy;
+              let updatedBookmarkedBy = prevData.bookmarkedBy;
+
+              if (action === "like" || action === "dislike") {
+                updatedLikedBy = !prevData.likedBy;
+              } else if (action === "bookmark" || action === "unbookmark") {
+                updatedBookmarkedBy = !prevData.bookmarkedBy;
+              }
+
               return {
                 ...prevData,
-                liked: action === "like",
-                bookmarked: action === "bookmark",
+                likedBy: updatedLikedBy,
+                bookmarkedBy: updatedBookmarkedBy,
               };
             }
             return null;
@@ -90,6 +99,10 @@ const Tweet: React.FC<TweetProps> = ({
         }
       }
     );
+  };
+
+  const handleClickOn = () => {
+    router.push(`/tweet/${userHandle}/${tweetId}`);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -123,9 +136,11 @@ const Tweet: React.FC<TweetProps> = ({
     threadId,
     timestamp,
     likes,
+    bookmarks,
+    replies,
     userHandle,
-    liked,
-    bookmarked,
+    likedBy,
+    bookmarkedBy,
     userName,
   } = tweetData;
 
@@ -179,31 +194,16 @@ const Tweet: React.FC<TweetProps> = ({
               />
             </div>
           )}
-          <div className=" pb-3 flex items-center  space-x-4">
-            <button
-              className="flex items-center text-lg"
-              onClick={() => updateTweetData(liked ? "dislike" : "like")}
-            >
-              {liked ? (
-                <AiFillHeart className=" text-red-500" />
-              ) : (
-                <AiOutlineHeart className="" />
-              )}
-            </button>
-            <div className="text-sm">{likes.length}</div>
-            <button
-              className="flex items-center text-sm"
-              onClick={() =>
-                updateTweetData(bookmarked ? "unbookmark" : "bookmark")
-              }
-            >
-              {bookmarked ? (
-                <BsFillBookmarkFill className="mr-1 text-blue-500" />
-              ) : (
-                <BsBookmark className="mr-1" />
-              )}
-            </button>
-
+          <div className=" pb-3 flex items-center  space-x-12">
+            <div className="flex space-x-2">
+              <button
+                className="flex items-center text-lg"
+                onClick={handleClickOn}
+              >
+                <BiMessageRounded className="mr-1" />
+              </button>
+              <div className="text-sm">{replies}</div>
+            </div>
             <button
               className="flex items-center text-lg"
               data-tip="Retweet and Quote"
@@ -235,9 +235,36 @@ const Tweet: React.FC<TweetProps> = ({
               </div>
             )}
 
-            <button className="flex items-center text-lg">
-              <BiMessageRounded className="mr-1" />
-            </button>
+            <div className="flex space-x-2">
+              <button
+                className="flex items-center text-lg"
+                onClick={() => updateTweetData(likedBy ? "dislike" : "like")}
+              >
+                {likedBy ? (
+                  <AiFillHeart className="text-red-500" />
+                ) : (
+                  <AiOutlineHeart />
+                )}
+              </button>
+              <div className="text-sm">{likes}</div>
+            </div>
+
+            <div className="flex space-x-2">
+              <button
+                className="flex items-center text-sm"
+                onClick={() =>
+                  updateTweetData(bookmarkedBy ? "unbookmark" : "bookmark")
+                }
+              >
+                {bookmarkedBy ? (
+                  <BsFillBookmarkFill className="mr-1 text-blue-500" />
+                ) : (
+                  <BsBookmark className="mr-1" />
+                )}
+              </button>
+              <div className="text-sm">{bookmarks}</div>
+            </div>
+
             <button className="flex items-center text-base">
               <FiShare className="mr-1" />
             </button>

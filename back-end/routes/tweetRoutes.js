@@ -16,7 +16,7 @@ router.post("/delete", verifyToken, (req, res) => {
 });
 
 //Fetch tweet
-router.get("/getTweet", verifyToken, (req, res) => {
+router.get("/getTweet", (req, res) => {
   fetchTweet(req, res);
 });
 

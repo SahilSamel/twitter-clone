@@ -1,6 +1,8 @@
 import Tweet from "../models/tweets.js";
 import Thread from "../models/threads.js";
 import User from "../models/users.js";
+import driver from "../connections/neo4j.js";
+
 
 //  <--- TWEET CREATION FUNCTIONS --->
 
@@ -85,54 +87,102 @@ const deleteTweet = (req, res) => {
 };
 
 //Fetch tweet
-const fetchTweet = (req, res) => {
-  const { userId, tweetId } = req.query;
+const fetchTweet = async (req, res) => {
+  const { userId, tweetUserId, tweetId } = req.query;
 
-  Tweet.findOne({ userId }, (err, userTweet) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
+  const session = driver.session();
+  try {
+    const userTweet = await Tweet.findOne({ userId: tweetUserId });
 
     if (!userTweet) {
-      return res.status(404).json({ error: 'User Not Found' });
+      return res.status(404).json({ error: "User Not Found" });
     }
 
-    User.findOne({ uid: userId }, (err, user) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).json({ error: 'Internal Server Error' });
-      }
+    const user = await User.findOne({ uid: tweetUserId });
 
-      if (!user) {
-        return res.status(404).json({ error: 'User Not Found' });
-      }
+    if (!user) {
+      return res.status(404).json({ error: "User Not Found" });
+    }
 
-      const tweet = userTweet.tweets.id(tweetId);
+    const tweet = userTweet.tweets.id(tweetId);
 
-      if (!tweet) {
-        return res.status(404).json({ error: 'Tweet not found' });
-      }
+    if (!tweet) {
+      return res.status(404).json({ error: "Tweet not found" });
+    }
 
-      const { type, text, mediaURL, derivedUserId, derivedTweetId, threadId, timestamp, likes } = tweet;
-      const { userHandle, userName } = user;
+    const {
+      type,
+      text,
+      mediaURL,
+      derivedUserId,
+      derivedTweetId,
+      threadId,
+      timestamp,
+      likes,
+    } = tweet;
+    const { userHandle, userName } = user;
 
-      const tweetData = {
-        type,
-        text,
-        mediaURL,
-        derivedUserId,
-        derivedTweetId,
-        threadId,
-        timestamp,
-        likes,
-        userHandle,
-        userName
-      };
+    const result = await session.run(
+      `
+      MATCH (:User)-[r:BOOKMARKED]->(t:Tweet {tweetId: $tweetId})
+      RETURN count(r) AS bookmarkCount
+      `,
+      { tweetId }
+    );
+    const bookmarkCount = parseInt(result.records[0]?.get("bookmarkCount") || 0);
 
-      res.json(tweetData);
-    });
-  });
+    const likedByResult = await session.run(
+      `
+      MATCH (u:User {uid: $userId})-[:LIKES]->(t:Tweet {tweetId: $tweetId})
+      RETURN COUNT(*) AS likeCount
+      `,
+      { userId, tweetId }
+    );
+    const likedByCount = likedByResult.records[0].get("likeCount").toNumber();
+    
+    const bookmarkedByResult = await session.run(
+      `
+      MATCH (u:User {uid: $userId})-[:BOOKMARKED]->(t:Tweet {tweetId: $tweetId})
+      RETURN COUNT(*) AS bookmarkCount
+      `,
+      { userId, tweetId }
+    );
+    const bookmarkedByCount = bookmarkedByResult.records[0].get("bookmarkCount").toNumber();
+
+    const likedBy = likedByCount > 0;
+    const bookmarkedBy = bookmarkedByCount > 0;
+    
+    let repliesCount = 0;
+    const thread = await Thread.findById(threadId);
+
+
+    if (thread) {
+      repliesCount = thread.replies.length;
+    }
+    
+    const tweetData = {
+      type,
+      text,
+      mediaURL,
+      derivedUserId,
+      derivedTweetId,
+      threadId,
+      timestamp,
+      likes: likes.length,
+      bookmarks: bookmarkCount,
+      replies: repliesCount,
+      likedBy: likedByCount,
+      bookmarkedBy: bookmarkedByCount,
+      userHandle,
+      userName,
+    };
+    res.json(tweetData);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    session.close();
+  }
 };
 
 
@@ -206,43 +256,86 @@ const deleteReply = (req, res) => {
 // <-- BOOKMARK FUNCTIONS -->
 
 //Create a bookmark
-const bookmark = (req, res) => {
+const bookmark = async (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
-  User.findOneAndUpdate(
-    { uid: userId },
-    {
-      $push: {
-        bookmarks: {
-          userId: tweetUserId,
-          tweetId: tweetId,
+
+  const session = driver.session();
+
+  try {
+    const result = await session.run(
+      `
+      MERGE (t:Tweet {tweetId: $tweetId})
+      RETURN t
+      `,
+      { tweetId }
+    );
+
+    const query = `
+      MATCH (u:User {uid: $userId})
+      MATCH (t:Tweet {tweetId: $tweetId})
+      MERGE (u)-[:BOOKMARKED]->(t)
+    `;
+
+    await session.run(query, { userId, tweetId });
+
+    await User.findOneAndUpdate(
+      { uid: userId },
+      {
+        $push: {
+          bookmarks: {
+            userId: tweetUserId,
+            tweetId: tweetId,
+          },
         },
-      },
-    }
-  )
-    .then(() => {
-      res.status(200).json({ message: "Tweet bookmarked successfully" });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while bookmarking tweet" });
-    });
+      }
+    );
+
+    res.status(200).json({ message: "Tweet bookmarked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error while bookmarking tweet" });
+  } finally {
+    session.close();
+  }
 };
 
 //Delete a bookmark
-const unbookmark = (req, res) => {
+const unbookmark = async (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
 
-  User.findOneAndUpdate(
-    { uid: userId },
-    { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
-  )
-    .then(() => {
-      res.status(200).json({ message: "Tweet unbookmarked successfully" });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Error while bookmarking tweet" });
-    });
+  const session = driver.session();
+
+  try {
+    const query = `
+      MATCH (u:User {uid: $userId})-[r:BOOKMARKED]->(t:Tweet {tweetId: $tweetId})
+      DELETE r
+    `;
+
+    await session.run(query, { userId, tweetId });
+
+    const result = await session.run(
+      `
+      OPTIONAL MATCH (t:Tweet {tweetId: $tweetId})<-[r:BOOKMARKED]-()
+      WITH t, COUNT(r) AS bookmarkCount
+      WHERE bookmarkCount = 0
+      DELETE t
+      RETURN t
+      `,
+      { tweetId }
+    );
+
+    await User.findOneAndUpdate(
+      { uid: userId },
+      { $pull: { bookmarks: { userId: tweetUserId, tweetId } } }
+    );
+
+    res.status(200).json({ message: "Tweet unbookmarked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error while unbookmarking tweet" });
+  } finally {
+    session.close();
+  }
 };
 
 // <-- End of BOOKMARK FUNCTIONS -->
@@ -250,55 +343,91 @@ const unbookmark = (req, res) => {
 // <-- LIKE/DISLIKE FUNCTIONS -->
 
 // Like tweet
-const likeTweet = (req, res) => {
+const likeTweet = async (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
 
-  Tweet.findOneAndUpdate(
-    { userId: tweetUserId, "tweets._id": tweetId },
-    { $push: { "tweets.$.likes": { userId: userId } } }
-  )
-    .then(() => {
+  const session = driver.session();
+
+  try {
+    const result = await session.run(
+      `
+      MERGE (t:Tweet {tweetId: $tweetId})
+      RETURN t
+      `,
+      { tweetId }
+    );
+
+    const query = `
+      MATCH (u:User {uid: $userId})
+      MATCH (t:Tweet {tweetId: $tweetId})
+      MERGE (u)-[:LIKES]->(t)
+    `;
+
+    await session.run(query, { userId, tweetId });
+
+    await Promise.all([
+      Tweet.findOneAndUpdate(
+        { userId: tweetUserId, "tweets._id": tweetId },
+        { $push: { "tweets.$.likes": { userId: userId } } }
+      ),
       User.findOneAndUpdate(
         { uid: userId },
         { $push: { liked: { userId: tweetUserId, tweetId } } }
-      )
-        .then(() => {
-          res.status(200).json({ message: "Tweet liked successfully" });
-        })
-        .catch((error) => {
-          res.status(500).json({ error: "Error updating user liked array" });
-        });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: error.message });
-    });
+      ),
+    ]);
+
+    res.status(200).json({ message: "Tweet liked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  } finally {
+    session.close();
+  }
 };
 
 // Dislike tweet
-const dislikeTweet = (req, res) => {
+const dislikeTweet = async (req, res) => {
   const userId = req.userId.id;
   const { tweetUserId, tweetId } = req.body;
 
-  Tweet.findOneAndUpdate(
-    { userId: tweetUserId, "tweets._id": tweetId },
-    { $pull: { "tweets.$.likes": { userId: userId } } }
-  )
-    .then(() => {
+  const session = driver.session();
+
+  try {
+    const query = `
+      MATCH (u:User {uid: $userId})-[r:LIKES]->(t:Tweet {tweetId: $tweetId})
+      DELETE r
+    `;
+
+    await session.run(query, { userId, tweetId });
+
+    const result = await session.run(
+      `
+      OPTIONAL MATCH (t:Tweet {tweetId: $tweetId})<-[r:LIKES]-()
+      WITH t, COUNT(r) AS likesCount
+      WHERE likesCount = 0
+      DELETE t
+      RETURN t
+      `,
+      { tweetId }
+    );
+
+    await Promise.all([
+      Tweet.findOneAndUpdate(
+        { userId: tweetUserId, "tweets._id": tweetId },
+        { $pull: { "tweets.$.likes": { userId: userId } } }
+      ),
       User.findOneAndUpdate(
         { uid: userId },
         { $pull: { liked: { userId: tweetUserId, tweetId } } }
-      )
-        .then(() => {
-          res.status(200).json({ message: "Tweet unliked successfully" });
-        })
-        .catch((error) => {
-          res.status(500).json({ error: "Error updating user liked array" });
-        });
-    })
-    .catch((error) => {
-      res.status(500).json({ error: error.message });
-    });
+      ),
+    ]);
+
+    res.status(200).json({ message: "Tweet unliked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  } finally {
+    session.close();
+  }
 };
 
 // <-- End of LIKE/DISLIKE FUNCTIONS -->
