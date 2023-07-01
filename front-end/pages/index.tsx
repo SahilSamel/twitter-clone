@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { useSelector } from "react-redux";
-import Login from "@/components/Login";
-import Home from "@/pages/home";
-import SignUp from "@/components/SignUp";
 import { useRouter } from "next/router";
+import Head from 'next/head'
 
 export default function Index() {
   const token = useSelector((state: any) => state.auth.token);
