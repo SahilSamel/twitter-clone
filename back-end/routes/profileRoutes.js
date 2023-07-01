@@ -8,7 +8,8 @@ import {
   selfLiked,
   deleteUser,
   UpdateProfileData,
-  getUserId
+  getUserId,
+  updateImage
 } from "../controller/profileController.js";
 const router = express.Router();
 
@@ -50,6 +51,11 @@ router.get("/getLiked", (req, res) => {
 router.post("/updateProfile", verifyToken, (req, res) => {
   UpdateProfileData(req, res);
 });
+
+router.post("/updateImage", verifyToken, (req, res) => {
+  updateImage(req, res);
+});
+
 
 //<--- End of PROFILE UPDATE FUNCTIONALITIES --->
 

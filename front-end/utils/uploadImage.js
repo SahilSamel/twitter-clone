@@ -3,10 +3,19 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useDispatch, useSelector } from 'react-redux';
 
 const storage = getStorage();
-export const uploadFile = async (file,userId) => {
+export const uploadFile = async (file,userId,type) => {
+
+
   try {
-    const filename = `${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, `${userId}/media/${filename}`);
+    const filename = `${Date.now()}`;
+    var storageRef 
+
+    if(type=="tweet"){
+      storageRef = ref(storage, `${userId}/media/${filename}`);
+    }else{
+      storageRef = ref(storage, `${userId}/${type}`);
+
+    }
 
     let contentType;
 

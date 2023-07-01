@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { MdCalendarMonth } from "react-icons/md";
 import ProfileImage from "../ProfileImage";
+import { useState } from "react";
 
 interface ProfileHeader2Props {
   userName: string;
@@ -10,6 +11,8 @@ interface ProfileHeader2Props {
   followers: number;
   location: string;
   bio: string;
+  profileImageURL: string;
+  bgImageURL: string;
 }
 
 const ProfileHeader2: React.FC<ProfileHeader2Props> = ({
@@ -20,19 +23,28 @@ const ProfileHeader2: React.FC<ProfileHeader2Props> = ({
   followers,
   location,
   bio,
+  profileImageURL,
+  bgImageURL,
 }) => {
   return (
     <div>
-      <Image
-        src="https://pbs.twimg.com/profile_banners/3794171893/1687502503/1500x500"
-        width={1500}
-        height={500}
-        alt="Picture of the author"
-      />
+      <div style={{height:200}} className="relative">
+        <Image
+        src={bgImageURL == "" ? "/../public/assets/defaultBG.png" : bgImageURL}
+          fill={true}
+          alt="Picture of the author"
+        />
+      </div>
       <div className="relative bottom-16 left-5">
-        <ProfileImage
+        <Image
+          src={
+            profileImageURL == ""
+              ? "/../public/assets/defaultPFP.jpg"
+              : profileImageURL
+          }
           width={135}
           height={135}
+          alt="Picture of the author"
           className="absolute rounded-full border-solid border-4 border-black"
         />
       </div>

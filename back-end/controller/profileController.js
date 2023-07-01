@@ -162,6 +162,30 @@ const UpdateProfileData = (req, res) => {
   });
 };
 
+const updateImage = (req, res) => {
+  const userID = req.userId.id;
+  const { profileImageURL, bgImageURL } = req.body;
+
+  const update = {};
+  if (profileImageURL) {
+    update.profileImageURL = profileImageURL;
+  }
+  if (bgImageURL) {
+    update.bgImageURL = bgImageURL;
+  }
+
+  User.findOneAndUpdate({ uid: userID }, update, (error, updatedUser) => {
+    if (error) {
+      res.status(500).json({ error: "Error updating profile" });
+    } else if (updatedUser) {
+      res.status(200).json({ message: "Updated" });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  });
+};
+
+
 // <-- End of PROFILE PARAMETER UPDATE FUNCTIONS -->
 
 // <-- DELETE USER FUNCTION -->
@@ -205,4 +229,4 @@ const getUserId = (req, res) => {
   });
 };
 
-export { getProfile, selfTweets, selfReplies, selfTweetsWithMedia, selfLiked, deleteUser,UpdateProfileData,getUserId };
+export { getProfile, selfTweets, selfReplies, selfTweetsWithMedia, selfLiked, deleteUser,UpdateProfileData,getUserId,updateImage };

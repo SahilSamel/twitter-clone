@@ -51,7 +51,7 @@ const CreateTweet = () => {
     const fileUrls: string[] = [];
     for (const preview of imagePreviews) {
       const file = await fetch(preview.url).then((res) => res.blob());
-      const fileUrl = await uploadFile(file,userId);
+      const fileUrl = await uploadFile(file,userId,"tweet");
       fileUrls.push(fileUrl);
     }
     return fileUrls;

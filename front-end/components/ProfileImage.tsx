@@ -1,9 +1,27 @@
 import Image from "next/image";
+import { useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import GET from "@/api/GET/GET";
 
 const ProfileImage = ({ width = 400, height = 400, ...restProps }) => {
+  const [PFPURL, setPFPURL] = useState("");
+  const userHandle = useSelector((state: any) => state.auth.userHandle);
+
+  useEffect(() => {
+    GET(
+      `/profile/getProfile?userHandle=${userHandle}`,
+      (err: any, data: any) => {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          setPFPURL(data.profileImageURL);
+        }
+      }
+    );
+  }, [userHandle]);
   return (
     <Image
-      src="https://pbs.twimg.com/profile_images/1369150025360494593/U6uUYd2l_400x400.jpg"
+      src={(PFPURL!="")?PFPURL:"/../public/assets/defaultPFP.jpg"}
       width={width}
       height={height}
       alt="Picture of the author"

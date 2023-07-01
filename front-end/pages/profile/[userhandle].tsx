@@ -14,7 +14,9 @@ interface userData{
   location: string,
   joinDate: string,
   followersCount: number,
-  followeesCount: number
+  followeesCount: number,
+  profileImageURL:string,
+  bgImageURL:string
 }
 
 
@@ -77,6 +79,8 @@ const ProfilePage = () => {
             followers={userData.followersCount}
             following={userData.followeesCount}
             joinDate={userData.joinDate}
+            profileImageURL={userData.profileImageURL}
+            bgImageURL={userData.bgImageURL}
           />
         )}
 
