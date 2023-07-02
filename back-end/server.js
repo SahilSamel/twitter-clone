@@ -25,7 +25,7 @@ mongo();
 app.use(express.json());
 app.use(helmet());
 app.use(cors({
-  origin: 'http://127.0.0.1:3000', // Allow all origins
+  origin: 'http://localhost:3000', // Allow all origins
   credentials: true, // Allow credentials (cookies) to be included
 }));
 

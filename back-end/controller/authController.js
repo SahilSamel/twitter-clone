@@ -91,13 +91,12 @@ const signIn = (req, res) => {
         }else{
           const userHandle = user.userHandle
           
-          res.cookie('jwt', token, {
-            httpOnly: false,
-            secure: false, // Set to true if using HTTPS
-            sameSite: 'Lax', // Adjust sameSite attribute based on your requirements
-            // domain: 'http://127.0.0.1:3000', // Set the cookie domain to localhost`
-            // path:'/'
+          res.cookie('token', token, {
+            httpOnly: true,
+            secure: true, // Set to true when using HTTPS
+            sameSite: 'none',
           });
+          
           
           
           res.status(201).json({ token, uid , userHandle});
