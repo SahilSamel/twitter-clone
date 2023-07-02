@@ -90,6 +90,16 @@ const signIn = (req, res) => {
           res.status(500)
         }else{
           const userHandle = user.userHandle
+          
+          res.cookie('jwt', token, {
+            httpOnly: false,
+            secure: false, // Set to true if using HTTPS
+            sameSite: 'Lax', // Adjust sameSite attribute based on your requirements
+            // domain: 'http://127.0.0.1:3000', // Set the cookie domain to localhost`
+            // path:'/'
+          });
+          
+          
           res.status(201).json({ token, uid , userHandle});
         }
       })

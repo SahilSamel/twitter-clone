@@ -115,7 +115,6 @@ const selfTweetsWithMedia = (req, res) => {
         userId: userId,
         tweetId: tweet._id,
       }));
-      console.log("Nigga")
     return res.status(200).json({ profileDisplayTweets });
   });
 };

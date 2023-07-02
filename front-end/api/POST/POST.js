@@ -8,6 +8,7 @@ const post = async (endpoint,data,func) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true
       });
 
       const jsonData = response.data;

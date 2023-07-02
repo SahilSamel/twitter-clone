@@ -2,7 +2,7 @@ import express from "express";
 import helmet from 'helmet';
 import bodyParser from "body-parser";
 import cors from "cors";
-
+import cookieParser from "cookie-parser";
 // <-- Connections import -->
 import mongo from "./connections/mongoDB.js";
 import driver from "./connections/neo4j.js";
@@ -24,10 +24,15 @@ mongo();
 // <-- Middleware -->
 app.use(express.json());
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:3000', // Allow all origins
+  credentials: true, // Allow credentials (cookies) to be included
+}));
+
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 // <-- End of Middleware -->
 
 // <-- Routes -->

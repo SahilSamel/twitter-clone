@@ -8,6 +8,7 @@ const APIGET = async (endpoint, token, func) => {
         "content-type": "application/json",
         Authorization: token,
       },
+      withCredentials: true
     });
 
     const jsonData = response.data;

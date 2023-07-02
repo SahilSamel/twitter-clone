@@ -7,6 +7,7 @@ const GET = async (endpoint, func) => {
       headers: {
         "content-type": "application/json"
       },
+      withCredentials: true 
     });
     const jsonData = response.data;
     func(null, jsonData);
