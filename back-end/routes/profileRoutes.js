@@ -20,6 +20,11 @@ router.get("/getProfile", (req, res) => {
   getProfile(req, res);
 });
 
+//Get user Id
+router.post("/getUserID",verifyToken,(req,res)=>{
+    getUserId(req,res);
+})
+
 // <-- End of USER DATA RETRIEVAL FUNCTIONALITIES -->
 
 // <-- SELF TWEET RETRIEVAL FUNCTIONALITIES -->
@@ -68,8 +73,5 @@ router.post("/deleteAccount", verifyToken, (req, res) => {
 
 // <-- End of DELETE USER FUNCTIONALITY -->
 
-router.post("/getUserID",verifyToken,(req,res)=>{
-    getUserId(req,res);
-})
 
 export default router;

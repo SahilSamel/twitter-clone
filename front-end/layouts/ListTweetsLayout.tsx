@@ -12,6 +12,7 @@ interface TweetData {
 }
 
 const TweetList = (props: any) => {
+  const {threadId} = props;
   const { list: initialList, userIdprop } = props;
   const currentUserId = useSelector((state: any) => state.auth.userId);
   var userId: string;
@@ -62,12 +63,20 @@ const TweetList = (props: any) => {
           setTweetDataList(data.bookmarks);
         }
       });
+    } else if (list === "getReplies"){
+      GET(`/compose/${list}?threadId=${threadId}`, function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          setTweetDataList(data.replies);
+        }
+      });
     } else {
       GET(`/profile/${list}?userId=${userId}`, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          setTweetDataList(data.profileDisplayTweets);
+          setTweetDataList(data.displayTweets);
         }
       });
     }

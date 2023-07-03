@@ -42,6 +42,7 @@ const Tweet: React.FC<TweetProps> = ({
   tweetId,
   originalTweet = false,
 }: TweetProps) => {
+  
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
   const currentUser = useSelector((state: any) => state.auth.userId);
   const [showActions, setShowActions] = useState(false);
@@ -96,7 +97,7 @@ const Tweet: React.FC<TweetProps> = ({
     );
   };
 
-  const handleClickOn = () => {
+  const handleClickOnReply = () => {
     router.push(`/tweet/${userHandle}/${tweetId}`);
   };
 
@@ -193,7 +194,7 @@ const Tweet: React.FC<TweetProps> = ({
             <div className="flex space-x-2">
               <button
                 className="flex items-center text-lg"
-                onClick={handleClickOn}
+                onClick={handleClickOnReply}
               >
                 <BiMessageRounded className="mr-1" />
               </button>

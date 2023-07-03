@@ -3,8 +3,7 @@ import mongoose from "mongoose";
 const threadsSchema = new mongoose.Schema({
     replies:[{
         userId:{type:String},
-        tweetId:{type:String},
-        threadId:{type:String}
+        tweetId:{type:String}
     }]
 });
 

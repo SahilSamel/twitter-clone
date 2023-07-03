@@ -15,11 +15,14 @@ router.get("/checkLogin", (req, res) => {
 // Log User Out
 router.get("/clearAuth", (req, res) => {
   try {
-    res.clearCookie('token');
+    res.clearCookie('token', { domain: 'localhost', path: '/', secure: true });
+    res.sendStatus(200);
   } catch (error) {
     res.status(500).json({ error: "Failed to clear cookies" });
   }
 });
+
+
 
 
 // Creating user in firebase, mongo and neo4j                                                     

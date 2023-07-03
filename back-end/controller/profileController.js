@@ -62,12 +62,12 @@ const selfTweets = (req, res) => {
       return res.status(404).json({ error: "No tweets found for the user" });
     }
 
-    const profileDisplayTweets = tweetDocument.tweets.map((tweet) => ({
+    const displayTweets = tweetDocument.tweets.map((tweet) => ({
       userId: userId,
       tweetId: tweet._id,
     }));
 
-    return res.status(200).json({profileDisplayTweets});
+    return res.status(200).json({displayTweets});
   });
 };
 
@@ -85,14 +85,14 @@ const selfReplies = (req, res) => {
       return res.status(404).json({ error: "No tweets found for the user" });
     }
 
-    const profileDisplayTweets = tweetDocument.tweets
+    const displayTweets = tweetDocument.tweets
       .filter((tweet) => tweet.type !== 1)
       .map((tweet) => ({
         userId: userId,
         tweetId: tweet._id,
       }));
 
-    return res.status(200).json({profileDisplayTweets});
+    return res.status(200).json({displayTweets});
   });
 };
 
@@ -109,13 +109,13 @@ const selfTweetsWithMedia = (req, res) => {
       return res.status(404).json({ error: "No tweets found for the user" });
     }
 
-    const profileDisplayTweets = tweetDocument.tweets
+    const displayTweets = tweetDocument.tweets
       .filter((tweet) => tweet.mediaURL !== "")
       .map((tweet) => ({
         userId: userId,
         tweetId: tweet._id,
       }));
-    return res.status(200).json({ profileDisplayTweets });
+    return res.status(200).json({ displayTweets });
   });
 };
 
@@ -133,9 +133,9 @@ const selfLiked = (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const profileDisplayTweets = userDocument.liked;
+    const displayTweets = userDocument.liked;
 
-    return res.status(200).json({profileDisplayTweets});
+    return res.status(200).json({displayTweets});
   });
 };
 

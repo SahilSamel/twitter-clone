@@ -24,7 +24,6 @@ const Sidebar = () => {
     router.push(`/profile/${userHandle}`);
   };
   const handleLogout = () => {
-    console.log("logout")
     GET("/auth/clearAuth", function (err: any, data: any) {
       if (err) {
         console.log(err);

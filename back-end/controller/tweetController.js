@@ -3,7 +3,6 @@ import Thread from "../models/threads.js";
 import User from "../models/users.js";
 import driver from "../connections/neo4j.js";
 
-
 //  <--- TWEET CREATION FUNCTIONS --->
 
 //  Create a new Tweet
@@ -129,7 +128,9 @@ const fetchTweet = async (req, res) => {
       `,
       { tweetId }
     );
-    const bookmarkCount = parseInt(result.records[0]?.get("bookmarkCount") || 0);
+    const bookmarkCount = parseInt(
+      result.records[0]?.get("bookmarkCount") || 0
+    );
 
     const likedByResult = await session.run(
       `
@@ -139,7 +140,7 @@ const fetchTweet = async (req, res) => {
       { userId, tweetId }
     );
     const likedByCount = likedByResult.records[0].get("likeCount").toNumber();
-    
+
     const bookmarkedByResult = await session.run(
       `
       MATCH (u:User {uid: $userId})-[:BOOKMARKED]->(t:Tweet {tweetId: $tweetId})
@@ -147,19 +148,20 @@ const fetchTweet = async (req, res) => {
       `,
       { userId, tweetId }
     );
-    const bookmarkedByCount = bookmarkedByResult.records[0].get("bookmarkCount").toNumber();
+    const bookmarkedByCount = bookmarkedByResult.records[0]
+      .get("bookmarkCount")
+      .toNumber();
 
     const likedBy = likedByCount > 0;
     const bookmarkedBy = bookmarkedByCount > 0;
-    
+
     let repliesCount = 0;
     const thread = await Thread.findById(threadId);
-
 
     if (thread) {
       repliesCount = thread.replies.length;
     }
-    
+
     const tweetData = {
       type,
       text,
@@ -184,8 +186,6 @@ const fetchTweet = async (req, res) => {
     session.close();
   }
 };
-
-
 
 //Create reply
 const createReply = (req, res) => {
@@ -223,6 +223,25 @@ const createReply = (req, res) => {
     res.status(403).json({ Error: error });
   }
 };
+
+// Fetch replies
+const fetchReplies = (req, res) => {
+  const { threadId } = req.query;
+  
+  // Assuming you're using MongoDB and Mongoose
+  Thread.findById(threadId)
+    .then((thread) => {
+      if (!thread) {
+        return res.status(404).json({ error: "Thread not found" });
+      }
+      const replies = thread.replies;
+      res.json({ replies });
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Failed to fetch replies" });
+    });
+};
+
 
 //Delete Reply
 const deleteReply = (req, res) => {
@@ -439,6 +458,7 @@ export {
   unbookmark,
   fetchTweet,
   createReply,
+  fetchReplies,
   deleteReply,
   likeTweet,
   dislikeTweet,
