@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setToken, setUserId } from '@/state/authStates';
+import { setUserId } from '@/state/authStates';
 import { useRouter } from 'next/router';
 import { useForm, SubmitHandler } from "react-hook-form";
 import POST from '@/api/POST/POST';
@@ -31,8 +31,7 @@ export default function SignUp({ toggleForm }: SignUpProps) {
       if (err) {
         console.log(err);
       } else {
-        const { token, uid } = data;
-        dispatch(setToken(token));
+        const { uid } = data;
         dispatch(setUserId(uid));
         router.push('/');
       }

@@ -1,7 +1,5 @@
 import Image from "next/image";
 import { MdCalendarMonth } from "react-icons/md";
-import ProfileImage from "../ProfileImage";
-import { useState } from "react";
 
 interface ProfileHeader2Props {
   userName: string;

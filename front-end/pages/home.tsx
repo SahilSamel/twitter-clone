@@ -1,22 +1,27 @@
-import React from 'react';
-import Layout from '@/layouts/mainLayout';
+import React, { useEffect } from "react";
+import Layout from "@/layouts/mainLayout";
 import { useRouter } from "next/router";
-import { useSelector } from 'react-redux';
-import TweetList from '@/layouts/ListTweetsLayout';
-
+import TweetList from "@/layouts/ListTweetsLayout";
+import GET from "@/api/GET/GET";
 
 const Home = () => {
-  const token = useSelector((state:any) => state.auth.token);
   const router = useRouter();
-  if(!token){
-    router.push("/auth");
-    return;
-  }
 
-  return (
-    <Layout middleComponent={TweetList} list="refresh" />
+  useEffect(() => {
+    const checkAuth = () => {
+      GET("/auth/checkLogin", function (err: any, data: any) {
+        if (err) {
+          router.push("/auth");
+        } else {
+          router.push("/home");
+        }
+      });
+    };
 
-  );
+    checkAuth();
+  }, []); // Empty dependency array to ensure the effect runs only once
+
+  return <Layout middleComponent={TweetList} list="refresh" />;
 };
 
 export default Home;

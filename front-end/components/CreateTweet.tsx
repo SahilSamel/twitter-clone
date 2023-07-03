@@ -4,7 +4,7 @@ import { GoFileMedia } from "react-icons/go";
 import { GrEmoji } from "react-icons/gr";
 import { MdOutlineGifBox } from "react-icons/md";
 import { AiOutlineCloseCircle } from "react-icons/ai";
-import APIPOST from "@/api/POST/APIPOST";
+import POST from "@/api/POST/POST";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/router";
 import { uploadFile } from "@/utils/uploadImage";
@@ -18,7 +18,6 @@ const CreateTweet = () => {
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const token = useSelector((state:any) => state.auth.token);
   const userId = useSelector((state:any) => state.auth.userId);
 
   const dispatch = useDispatch();
@@ -59,9 +58,8 @@ const CreateTweet = () => {
 
   const onSubmit = async () => {
     const fileURLs = await uploadFilesToFirebase();
-    APIPOST(
+    POST(
       "/compose/tweet",
-      token,
       {
         type: 0,
         text: text,

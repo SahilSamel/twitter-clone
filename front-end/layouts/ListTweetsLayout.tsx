@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import Tweet from "@/components/Tweet";
 import { useSelector, useDispatch } from "react-redux";
-import APIPOST from "@/api/POST/APIPOST";
-import APIGET from "@/api/GET/APIGET";
+import POST from "@/api/POST/POST";
 import GET from "@/api/GET/GET";
 import { setTimer } from "@/state/cacheStates";
-import router from "next/router";
 
 interface TweetData {
   userId: string;
@@ -16,17 +14,12 @@ interface TweetData {
 const TweetList = (props: any) => {
   const { list: initialList, userIdprop } = props;
   const currentUserId = useSelector((state: any) => state.auth.userId);
-  var userId:string;
+  var userId: string;
 
-  if(userIdprop!=undefined) userId =  userIdprop;
-  else userId=currentUserId
-
-
+  if (userIdprop != undefined) userId = userIdprop;
+  else userId = currentUserId;
 
   const [tweetDataList, setTweetDataList] = useState<TweetData[]>([]);
-  const token = useSelector((state: any) => state.auth.token);
-  
-
 
   const lastServedTimestamp = useSelector(
     (state: any) => state.timer.lastServedTimestamp
@@ -40,7 +33,7 @@ const TweetList = (props: any) => {
     if (list === "refresh") {
       setList("scrolldown");
       const jsonData = { lastServedTimestamp };
-      APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
+      POST(`/user/${list}`, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
@@ -49,7 +42,7 @@ const TweetList = (props: any) => {
       });
     } else if (list === "scrolldown") {
       const jsonData = { lastServedTimestamp };
-      APIPOST(`/user/${list}`, token, jsonData, function (err: any, data: any) {
+      POST(`/user/${list}`, jsonData, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {
@@ -62,7 +55,7 @@ const TweetList = (props: any) => {
         }
       });
     } else if (list === "getBookmarks") {
-      APIPOST(`/user/${list}`, token, {}, function (err: any, data: any) {
+      POST(`/user/${list}`, {}, function (err: any, data: any) {
         if (err) {
           console.log(err, "error at axios");
         } else {

@@ -2,9 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   AiOutlineHeart,
   AiFillHeart,
-  AiOutlineRetweet,
-  AiOutlineMessage,
-  AiOutlineShake,
 } from "react-icons/ai";
 import { BsBookmark, BsFillBookmarkFill } from "react-icons/bs";
 import { FiShare } from "react-icons/fi";
@@ -13,7 +10,7 @@ import { FaRetweet } from "react-icons/fa";
 import { LuEdit3 } from "react-icons/lu";
 import GET from "@/api/GET/GET";
 import { useSelector } from "react-redux";
-import APIPOST from "@/api/POST/APIPOST";
+import POST from "@/api/POST/POST";
 import { useRouter } from "next/router";
 import Bookmarks from "@/pages/bookmarks";
 
@@ -46,7 +43,6 @@ const Tweet: React.FC<TweetProps> = ({
   originalTweet = false,
 }: TweetProps) => {
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
-  const token = useSelector((state: any) => state.auth.token);
   const currentUser = useSelector((state: any) => state.auth.userId);
   const [showActions, setShowActions] = useState(false);
   const actionsRef = useRef<HTMLDivElement>(null);
@@ -69,9 +65,8 @@ const Tweet: React.FC<TweetProps> = ({
 
   const updateTweetData = (action: string) => {
     const jsonData = { tweetUserId: userId, tweetId: tweetId };
-    APIPOST(
+    POST(
       `/compose/${action}`,
-      token,
       jsonData,
       function (err: any, data: any) {
         if (err) {

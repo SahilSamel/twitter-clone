@@ -1,7 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { clearToken, clearUserHandle,clearUserId } from "@/state/authStates";
+import { clearUserHandle, clearUserId } from "@/state/authStates";
 import { useRouter } from "next/router";
+import GET from "@/api/GET/GET";
 import {
   AiOutlineHome,
   AiOutlineUser,
@@ -12,35 +13,29 @@ import {
   AiOutlineLogout,
 } from "react-icons/ai";
 import { useWindowSize } from "@/utils/Windowsize"; // Custom hook for getting window size
-import APIGET from "@/api/GET/APIGET";
-const Sidebar = () => {
-  const userId = useSelector((state:any) => state.auth.userId);
 
+const Sidebar = () => {
   const { width } = useWindowSize(); // Get window width using custom hook
   const isMobile = width <= 1222; // Define breakpoint for mobile screens
   const dispatch = useDispatch();
   const router = useRouter();
-  const token = useSelector((state: any) => state.auth.token);
-  const userHandle = useSelector((state: any) => state.auth.userHandle);  
+  const userHandle = useSelector((state: any) => state.auth.userHandle);
   const handleProfileClick = () => {
     router.push(`/profile/${userHandle}`);
   };
   const handleLogout = () => {
-    dispatch(clearToken());
-    dispatch(clearUserId());
-    dispatch(clearUserHandle());
-    router.push("/");
-  };
-
-  const test = () => {
-    APIGET("/getBookmarks", token, function (err: any, data: any) {
+    console.log("logout")
+    GET("/auth/clearAuth", function (err: any, data: any) {
       if (err) {
         console.log(err);
       } else {
-        console.log(data);
+        dispatch(clearUserId());
+        dispatch(clearUserHandle());
+        router.push("/");
       }
     });
   };
+
   return (
     <div className="flex flex-col gap-5 justify-start items-start max-w-xs ">
       <button

@@ -3,9 +3,8 @@ import SettingsHeader from "./SettingsHeader";
 import GET from "@/api/GET/GET";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
-import APIPOST from "@/api/POST/APIPOST";
+import POST from "@/api/POST/POST";
 import Image from "next/image";
-import ProfileImage from "../ProfileImage";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import { uploadFile } from "@/utils/uploadImage";
 
@@ -18,7 +17,6 @@ type FormValues = {
 
 const ProfileEdit = () => {
   const userhandle = useSelector((state: any) => state.auth.userHandle);
-  const token = useSelector((state: any) => state.auth.token);
 
   const [userData, setUserData] = useState<FormValues>({
     userName: "",
@@ -38,7 +36,14 @@ const ProfileEdit = () => {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          const { userName, bio, location, birthdate, bgImageURL,profileImageURL } = data;
+          const {
+            userName,
+            bio,
+            location,
+            birthdate,
+            bgImageURL,
+            profileImageURL,
+          } = data;
           setbgImageURL(bgImageURL);
           setprofileImageURL(profileImageURL);
 
@@ -62,18 +67,13 @@ const ProfileEdit = () => {
   }, [userData, reset]);
 
   const onSubmit = (data: FormValues) => {
-    APIPOST(
-      "/profile/updateProfile",
-      token,
-      data,
-      function (err: any, data: any) {
-        if (err) {
-          console.log(err, "error at axios");
-        } else {
-          console.log(data);
-        }
+    POST("/profile/updateProfile", data, function (err: any, data: any) {
+      if (err) {
+        console.log(err, "error at axios");
+      } else {
+        console.log(data);
       }
-    );
+    });
     console.log(data);
   };
 
@@ -89,25 +89,20 @@ const ProfileEdit = () => {
 
       const data = { [type]: fileUrl }; // Create an object with dynamic key using computed property name
 
-      APIPOST(
-        "/profile/updateImage",
-        token,
-        data,
-        function (err: any, data: any) {
-          if (err) {
-            console.log(err, "error at axios");
-          } else {
-            console.log(fileUrl);
-            if (data.message === "Updated") {
-              if (type == "bgImageURL") {
-                setbgImageURL(fileUrl);
-              }else{
-                setprofileImageURL(fileUrl);
-              }
+      POST("/profile/updateImage", data, function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          console.log(fileUrl);
+          if (data.message === "Updated") {
+            if (type == "bgImageURL") {
+              setbgImageURL(fileUrl);
+            } else {
+              setprofileImageURL(fileUrl);
             }
           }
         }
-      );
+      });
     }
   };
 

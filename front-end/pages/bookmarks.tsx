@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import Layout from '@/layouts/mainLayout';
 import { useRouter } from "next/router";
-import { useSelector } from 'react-redux';
 import TweetList from '@/layouts/ListTweetsLayout';
+import GET from "@/api/GET/GET";
 
 const Bookmarks = () => {
-  const token = useSelector((state:any) => state.auth.token);
   const router = useRouter();
-  if(!token){
-    router.push("/auth");
-    return;
-  }
+  useEffect(() => {
+    const checkAuth = () => {
+      GET("/auth/checkLogin", function (err: any, data: any) {
+        if (err) {
+          router.push("/auth");
+          return;
+        }
+      });
+    };
+
+    checkAuth();
+  }, []); // Empty dependency array to ensure the effect runs only once
   return (
     <Layout middleComponent={TweetList} list="getBookmarks"/>
   );

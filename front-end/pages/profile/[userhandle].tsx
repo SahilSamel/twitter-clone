@@ -5,55 +5,56 @@ import React, { useEffect, useState } from "react";
 import TweetList from "@/layouts/ListTweetsLayout";
 import router from "next/router";
 import GET from "@/api/GET/GET";
-import APIPOST from "@/api/POST/APIPOST";
-import { useSelector } from "react-redux";
-interface userData{
-  userName: string,
-  userHandle: string,
-  bio: string,
-  location: string,
-  joinDate: string,
-  followersCount: number,
-  followeesCount: number,
-  profileImageURL:string,
-  bgImageURL:string
+import POST from "@/api/POST/POST";
+interface userData {
+  userName: string;
+  userHandle: string;
+  bio: string;
+  location: string;
+  joinDate: string;
+  followersCount: number;
+  followeesCount: number;
+  profileImageURL: string;
+  bgImageURL: string;
 }
-
 
 const ProfilePage = () => {
   const [section, setSection] = useState(0);
   const [userData, setUserData] = useState<userData | null>(null);
   const [userId, setuserId] = useState("");
 
-  const token = useSelector((state:any) => state.auth.token);
-    const fetchUserData = () => {
-    GET(`/profile/getProfile?userHandle=${router.query.userhandle}`, function (err: any, data: any) {
-      if (err) {
-        console.log(err, "error at axios");
-      } else {
-        setUserData(data); 
+  const fetchUserData = () => {
+    GET(
+      `/profile/getProfile?userHandle=${router.query.userhandle}`,
+      function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          setUserData(data);
+        }
       }
-    });
+    );
   };
 
   const fetchUserId = () => {
-    if(router.query.userhandle==undefined) return;
-    APIPOST(`/profile/getUserID`,token,{userHandle:`${router.query.userhandle}`}, function (err: any, data: any) {
-      if (err) {
-        console.log(err, "error at axios");
-      } else {
-        setuserId(data.userId); 
+    if (router.query.userhandle == undefined) return;
+    POST(
+      `/profile/getUserID`,
+      { userHandle: `${router.query.userhandle}` },
+      function (err: any, data: any) {
+        if (err) {
+          console.log(err, "error at axios");
+        } else {
+          setuserId(data.userId);
+        }
       }
-    });
+    );
   };
 
   useEffect(() => {
     fetchUserData();
     fetchUserId();
   }, [router.query.userhandle]);
-
-
-
 
   let listProp = "";
   if (section === 0) {
@@ -69,7 +70,7 @@ const ProfilePage = () => {
   return (
     <div>
       <div className="border border-slate-600	">
-      {userData && <ProfileHeader userName={userData.userName} />}
+        {userData && <ProfileHeader userName={userData.userName} />}
         {userData && (
           <ProfileHeader2
             userName={userData.userName}
@@ -152,10 +153,10 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className="border border-slate-600">
-        {section === 0 && <TweetList list={listProp} userIdprop={userId}/>}
-        {section === 1 && <TweetList list={listProp} userIdprop={userId}/>}
-        {section === 2 && <TweetList list={listProp} userIdprop={userId}/>}
-        {section === 3 && <TweetList list={listProp} userIdprop={userId}/>}
+        {section === 0 && <TweetList list={listProp} userIdprop={userId} />}
+        {section === 1 && <TweetList list={listProp} userIdprop={userId} />}
+        {section === 2 && <TweetList list={listProp} userIdprop={userId} />}
+        {section === 3 && <TweetList list={listProp} userIdprop={userId} />}
       </div>
     </div>
   );
@@ -166,4 +167,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

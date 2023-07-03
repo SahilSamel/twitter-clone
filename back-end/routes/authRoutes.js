@@ -1,13 +1,26 @@
 import express from "express";
-import { createUser, signIn } from "../controller/authController.js";
+import { checkLogin, createUser, signIn } from "../controller/authController.js";
 import {getAuth} from "firebase/auth";
-import verifyToken from "../middleware/verifyToken.js";
-
 
 const auth = getAuth();
 const router = express.Router();
 
 //<-- USER AUTHENTICATION FUNCTIONALITIES -->
+
+// Check if user already logged in
+router.get("/checkLogin", (req, res) => {
+  checkLogin(req, res);
+});
+
+// Log User Out
+router.get("/clearAuth", (req, res) => {
+  try {
+    res.clearCookie('token');
+  } catch (error) {
+    res.status(500).json({ error: "Failed to clear cookies" });
+  }
+});
+
 
 // Creating user in firebase, mongo and neo4j                                                     
 router.post("/signup", (req, res) => {

@@ -1,16 +1,23 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
-import Head from 'next/head'
+import GET from "@/api/GET/GET";
 
 export default function Index() {
-  const token = useSelector((state: any) => state.auth.token);
   const router = useRouter();
 
-  // Check if user is logged in
-  if (!token) {
-    router.push("/auth");
-  } else {
-    // User is logged in, render main content
-    router.push("/home");
-  }
+  useEffect(() => {
+    const checkAuth = () => {
+      GET("/auth/checkLogin", function (err: any, data: any) {
+        if (err) {
+          router.push("/auth");
+        } else {
+          router.push("/home");
+        }
+      });
+    };
+
+    checkAuth();
+  }, []); // Empty dependency array to ensure the effect runs only once
+
+  return null; // Return null or any loading indicator as the component doesn't render any content
 }

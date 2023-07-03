@@ -14,6 +14,17 @@ dotenv.config();
 
 // <-- USER AUTHENTICATION FUNCTIONS -->
 
+// Check if user logged In
+const checkLogin = (req, res) => {
+  if (req.cookies && req.cookies.token) {
+    // User is logged in
+    res.sendStatus(200); // Send response with status 200 (OK)
+  } else {
+    // User is not logged in
+    res.sendStatus(401); // Send response with status 401 (Unauthorized)
+  }
+}
+
 // Database Queries for Authentication
 const checkHandle = (userHandle) => {
   return User.findOne({ userHandle: userHandle }).then((user) => {
@@ -95,11 +106,8 @@ const signIn = (req, res) => {
             httpOnly: true,
             secure: true, // Set to true when using HTTPS
             sameSite: 'none',
-          });
+          }).status(201).json({ token, uid, userHandle });
           
-          
-          
-          res.status(201).json({ token, uid , userHandle});
         }
       })
     })
@@ -112,4 +120,4 @@ const signIn = (req, res) => {
 
 // <-- End of USER AUTHENTICATION FUNCTIONS -->
 
-export { createUser, signIn };
+export { checkLogin, createUser, signIn };
