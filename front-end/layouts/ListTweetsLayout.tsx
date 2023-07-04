@@ -119,7 +119,7 @@ const TweetList = (props: any) => {
   // }, []);
 
   return (
-    <>
+    <div className="overflow-y-auto">
       {list === "refresh" || list === "scrolldown" ? (
         <button onClick={handleRefresh}>Refresh</button>
       ) : null}
@@ -136,9 +136,9 @@ const TweetList = (props: any) => {
           />
         ))
       )}
-    </>
-    
+    </div>
   );
+  
 };
 
 export default TweetList;
