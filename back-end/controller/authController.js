@@ -112,9 +112,7 @@ const signIn = (req, res) => {
       })
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      res.status(401).json({ error: errorMessage });
+      res.status(401).json({ error: "The user with these credentials does not exist" });
     });
 };
 
