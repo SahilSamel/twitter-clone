@@ -25,34 +25,34 @@ interface TweetData {
 }
 
 const TweetPage = () => {
-  const [userId, setuserId] = useState("");
+  const [userId, setuserId] = useState('');
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
   const currentUser = useSelector((state: any) => state.auth.userId);
   const router = useRouter();
 
   const fetchUserId = () => {
-    console.log("Fetching User Id")
-  
+    console.log("Fetching User Id");
+    console.log(router.query.userHandle);
+
     const data = {
-      userHandle: router.query.userhandle,
+      userHandle: router.query.userHandle,
     };
-  
+
     POST("/profile/getUserID", data, function (err: any, data: any) {
       if (err) {
         console.log(err, "error at axios");
       } else {
-        console.log(data.userId);
         setuserId(data.userId);
-        fetchTweetData();
+        console.log(data.userId)
       }
     });
   };
-  
 
   const fetchTweetData = () => {
     if (router.query.tweetId === undefined) {
       return;
     }
+    console.log(userId);
     GET(
       `/compose/getTweet?userId=${currentUser}&tweetUserId=${userId}&tweetId=${router.query.tweetId}`,
       function (err: any, data: any) {
@@ -70,8 +70,13 @@ const TweetPage = () => {
 
   useEffect(() => {
     fetchUserId();
-  }, [router.query.userHandle, router.query.tweetId, currentUser]);
-  
+  }, []);
+
+  useEffect(() => {
+    if (userId != '') {
+      fetchTweetData();
+    }
+  }, [userId]);
 
   if (!tweetData) {
     return null; // Add loading indicator or placeholder here

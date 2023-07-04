@@ -17,6 +17,7 @@ router.post("/delete", verifyToken, (req, res) => {
 
 //Fetch tweet
 router.get("/getTweet", (req, res) => {
+  console.log(req);
   fetchTweet(req, res);
 });
 
@@ -25,7 +26,7 @@ router.post("/reply", verifyToken, (req, res) => {
   createReply(req, res);
 });
 
-router.post("/getReplies", (req, res) => {
+router.get("/getReplies", (req, res) => {
   fetchReplies(req, res);
 })
 

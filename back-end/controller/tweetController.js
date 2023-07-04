@@ -228,7 +228,6 @@ const createReply = (req, res) => {
 const fetchReplies = (req, res) => {
   const { threadId } = req.query;
   
-  // Assuming you're using MongoDB and Mongoose
   Thread.findById(threadId)
     .then((thread) => {
       if (!thread) {
