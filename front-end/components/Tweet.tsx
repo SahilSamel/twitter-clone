@@ -12,7 +12,6 @@ import GET from "@/api/GET/GET";
 import { useSelector } from "react-redux";
 import POST from "@/api/POST/POST";
 import { useRouter } from "next/router";
-import Bookmarks from "@/pages/bookmarks";
 
 interface TweetData {
   text: string;
@@ -140,6 +139,14 @@ const Tweet: React.FC<TweetProps> = ({
     userName,
   } = tweetData;
 
+  const formattedTimestamp = new Date(timestamp).toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
   return (
     <div>
       {derivedUserId && derivedTweetId && (
@@ -175,7 +182,7 @@ const Tweet: React.FC<TweetProps> = ({
             <span style={{ color: "white" }}>{userName}</span>{" "}
             <button
               onClick={() => router.push(`/profile/${userHandle}`)}
-              className="text-blue-500 hover:underline cursor-pointer"
+              className="text-slate-500 hover:underline cursor-pointer"
             >
               @{userHandle}
             </button>
@@ -183,13 +190,15 @@ const Tweet: React.FC<TweetProps> = ({
           <div className="text-neutral-50 mb-2">{text}</div>
           {mediaURL && (
             <div className="mb-3">
-              <img
-                className="border border-0 rounded-2xl"
-                src={mediaURL}
-                alt="Tweet Media"
-              />
-            </div>
+            <img
+              className="border border-0 rounded-2xl max-w-full"
+              src={mediaURL}
+              alt="Tweet Media"
+              style={{ maxHeight: '100%', maxWidth: '100%' }}
+            />
+          </div>
           )}
+          <div className="pb-2 text-slate-400 text-sm">{formattedTimestamp}</div>
           <div className=" pb-3 flex items-center  space-x-12">
             <div className="flex space-x-2">
               <button

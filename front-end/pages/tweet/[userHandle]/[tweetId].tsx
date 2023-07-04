@@ -31,19 +31,14 @@ const TweetPage = () => {
   const router = useRouter();
 
   const fetchUserId = () => {
-    console.log("Fetching User Id");
-    console.log(router.query.userHandle);
-
     const data = {
       userHandle: router.query.userHandle,
     };
-
     POST("/profile/getUserID", data, function (err: any, data: any) {
       if (err) {
         console.log(err, "error at axios");
       } else {
         setuserId(data.userId);
-        console.log(data.userId)
       }
     });
   };
@@ -59,7 +54,6 @@ const TweetPage = () => {
         if (err) {
           console.log(err, "error at axios");
         } else {
-          console.log("fetched");
           setTweetData({
             ...data,
           });
@@ -70,12 +64,10 @@ const TweetPage = () => {
 
   useEffect(() => {
     fetchUserId();
-  }, []);
+  }, [router.query.userHandle]);
 
   useEffect(() => {
-    if (userId != '') {
-      fetchTweetData();
-    }
+    fetchTweetData();
   }, [userId]);
 
   if (!tweetData) {
