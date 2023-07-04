@@ -4,7 +4,6 @@
 
   const post = async (endpoint,data,func) => {
       try {
-        console.log(data)
         const response = await axios.post(serverUrl + endpoint, data, {
           headers: {
             'Content-Type': 'application/json',
