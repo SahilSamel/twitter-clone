@@ -36,7 +36,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 justify-start items-start max-w-xs ">
+    <div className="fixed flex flex-col gap-5 justify-start items-start max-w-xs ">
       <button
         className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
           isMobile ? "text-3xl" : "text-2xl"
