@@ -119,8 +119,17 @@ const Tweet: React.FC<TweetProps> = ({
   }, [userId, tweetId]);
 
   if (!tweetData) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '500px' }}>
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/twitter-clone-ratio.appspot.com/o/Dual%20Ring-1s-200px.png?alt=media&token=f8ee5d3a-3601-446a-bfb1-c0dcc1762b9c"
+          alt="Loading"
+          style={{ maxHeight: '40px', maxWidth: '40px' }}
+        />
+      </div>
+    );
   }
+  
 
   const {
     type,
