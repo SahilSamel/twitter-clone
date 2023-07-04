@@ -119,15 +119,14 @@ const TweetList = (props: any) => {
   // }, []);
 
   return (
-    <div
-      ref={listContainerRef}
-      style={{ overflowY: "scroll", height: "500px" }}
-    >
+    <>
       {list === "refresh" || list === "scrolldown" ? (
         <button onClick={handleRefresh}>Refresh</button>
       ) : null}
       {tweetDataList === undefined || tweetDataList.length === 0 ? (
-        <p>No tweets to display</p>
+        <div className="flex justify-center items-center">
+          <p>No tweets to display</p>
+        </div>
       ) : (
         tweetDataList.map((tweetData, index) => (
           <Tweet
@@ -137,7 +136,8 @@ const TweetList = (props: any) => {
           />
         ))
       )}
-    </div>
+    </>
+    
   );
 };
 
