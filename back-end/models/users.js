@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const usersSchema = new mongoose.Schema({
   uid: { type: String, required: true },
+  email:{type:String},
   userName: { type: String },
   userHandle: { type: String, required: true },
   followersCount: { type: Number, default: 0 },

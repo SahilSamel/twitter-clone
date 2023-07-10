@@ -3,7 +3,13 @@ import User from "../models/users.js";
 import admin from "firebase-admin";
 import driver from "../connections/neo4j.js";
 import serviceAccount from "../connections/firebaseAdmin.js";
-
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithCredential,
+} from "firebase/auth";
 // <-- Firebase admin SDK Initialization-->
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -192,25 +198,42 @@ const updateImage = (req, res) => {
 //Deleting user
 const deleteUser = async (req, res) => {
   const uid = req.userId.id;
-  const session = driver.session(); // Assuming you have the Neo4j driver instance available
+  const { password } = req.body;
+  const session = driver.session();
 
   try {
-    await User.deleteOne({ uid });
-    await Tweet.deleteOne({ uid });
-    await admin.auth().deleteUser(uid);
+    const user = await User.findOne({ uid:uid });
+    const email = user.email;
+    console.log(email);
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        await User.deleteOne({ uid });
+        await Tweet.deleteOne({ userid:uid });
+        await admin.auth().deleteUser(uid);
 
-    const result = await session.run("MATCH (u:User {uid: $uid}) DELETE u", {
-      uid,
-    });
+        const result = await session.run(
+          "MATCH (u:User {uid: $uid}) DELETE u",
+          { uid }
+        );
 
-    session.close();
-
-    res.status(200).json({ message: "User deleted successfully" });
+        session.close();
+        try {
+          res.clearCookie('token', { domain: 'localhost', path: '/', secure: true });
+          res.sendStatus(200);
+        } catch (error) {
+          res.status(500).json({ error: "Failed to clear cookies" });
+        }
+      })
+      .catch((error) => {
+        res.status(401).json({ error: "Invalid password" });
+      });
   } catch (error) {
     session.close();
     res.status(500).json({ error: "Error deleting user" });
   }
 };
+
 
 // <-- End of DELETE USER FUNCTION -->
 

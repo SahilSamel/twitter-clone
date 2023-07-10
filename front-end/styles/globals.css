@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'bold';
+    src: url('../public/fonts/Twitter-Chirp\ Bold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'heavy';
+    src: url('../public/fonts/Twitter_Chirp-Twitter_Chirp_Heavy.otf') format('opentype');
+}
+@font-face {
+    font-family: 'medium';
+    src: url('../public/fonts/Twitter_Chirp_Medium-Twitter_Chirp_Heavy.otf') format('opentype');
+}
+@font-face {
+    font-family: 'regular';
+    src: url('../public/fonts/Twitter_Chirp_Regular-Twitter_Chirp_Regular.otf') format('opentype');
+}
+
 body {
     background-color: black;
     color: white;
@@ -13,4 +30,40 @@ input {
 
 .drop-shadow-white:hover {
     filter: drop-shadow(0 0 0.5rem #868686);
+}
+
+.img-responsive{
+    width: 100%; 
+    height: 100%;
+    position:absolute; 
+    top:0; 
+    left:0; 
+}
+
+.tweet-media-mobile-sm{
+    padding-bottom: 80%;
+    position: relative;
+    overflow: hidden;
+}
+
+.tweet-media-responsive{
+    padding-bottom: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.text-regular{
+    font-family: 'regular', sans-serif;
+}
+
+.text-medium{
+    font-family: 'medium', sans-serif;
+}
+
+.text-heavy{
+    font-family: 'heavy', sans-serif;
+}
+
+.text-bold{
+    font-family: 'bold', sans-serif;
 }
