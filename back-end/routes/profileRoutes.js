@@ -1,6 +1,7 @@
 import express from "express";
 import verifyToken from "../middleware/verifyToken.js";
 import {
+  getRecommendations,
   getProfile,
   selfTweets,
   selfReplies,
@@ -21,8 +22,13 @@ router.get("/getProfile", (req, res) => {
 });
 
 //Get user Id
-router.post("/getUserID",verifyToken,(req,res)=>{
-    getUserId(req,res);
+router.post("/getUserID", verifyToken, (req,res)=>{
+  getUserId(req,res);
+})
+
+//Get user recommendations
+router.get("/getRecommendations", verifyToken, (req, res) => {
+  getRecommendations(req, res);
 })
 
 // <-- End of USER DATA RETRIEVAL FUNCTIONALITIES -->

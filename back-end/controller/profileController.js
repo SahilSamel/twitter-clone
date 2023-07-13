@@ -10,6 +10,7 @@ import {
   GoogleAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
+
 // <-- Firebase admin SDK Initialization-->
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -18,18 +19,53 @@ admin.initializeApp({
 
 // <-- USER DATA RETRIEVAL FUNCTIONS -->
 
+// Get user recommendations
+const getRecommendations = (req, res) => {
+  const { userId } = req.query;
+  const session = driver.session();
+  const query = `
+    MATCH (user:User {uid: $userId})-[:FOLLOWS]->()-[:FOLLOWS]->(result:User)
+    RETURN result.uid AS uid
+  `;
+
+  session
+    .run(query, { userId })
+    .then(async result => {
+      const uids = result.records.map(record => record.get('uid'));
+      const recommendations = [];
+
+      for (const uid of uids) {
+        const user = await User.findOne({ uid });
+        if (user) {
+          const { profileImageURL, userHandle, userName } = user;
+          recommendations.push({ uid, profileImageURL, userHandle, userName });
+        }
+      }
+
+      res.json(recommendations);
+    })
+    .catch(error => {
+      console.error('Error retrieving recommendations:', error);
+      res.status(500).json({ error: 'Failed to retrieve recommendations' });
+    })
+    .finally(() => {
+      session.close();
+    });
+};
+
+
 // Get user data
 const getProfile = async (req, res) => {
   const { userHandle } = req.query;
 
   try {
     const user = await User.findOne({ userHandle: userHandle }).exec();
-    
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     const year = user.joinDate.getFullYear();
-    const month = user.joinDate.toLocaleString("default", { month: "long" });;
+    const month = user.joinDate.toLocaleString("default", { month: "long" });
     const profileData = {
       userName: user.userName,
       userHandle: user.userHandle,
@@ -40,7 +76,7 @@ const getProfile = async (req, res) => {
       profileImageURL: user.profileImageURL,
       bgImageURL: user.bgImageURL,
       birthdate: user.birthdate,
-      joinDate: month + " " + year
+      joinDate: month + " " + year,
     };
 
     res.status(200).json(profileData);
@@ -50,14 +86,13 @@ const getProfile = async (req, res) => {
   }
 };
 
-
 // <-- End of USER DATA RETRIEVAL FUNCTIONS -->
 
 // <-- SELF TWEET LISTING FUNCTIONS -->
 
 // Get Self tweets
 const selfTweets = (req, res) => {
-  const {userId} = req.query;
+  const { userId } = req.query;
   Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
     if (err) {
       console.log(err);
@@ -73,14 +108,14 @@ const selfTweets = (req, res) => {
       tweetId: tweet._id,
     }));
 
-    return res.status(200).json({displayTweets});
+    return res.status(200).json({ displayTweets });
   });
 };
 
 // Get self replies
 const selfReplies = (req, res) => {
-  const {userId} = req.query;
-  
+  const { userId } = req.query;
+
   Tweet.findOne({ userId }, "tweets", (err, tweetDocument) => {
     if (err) {
       console.log(err);
@@ -98,10 +133,11 @@ const selfReplies = (req, res) => {
         tweetId: tweet._id,
       }));
 
-    return res.status(200).json({displayTweets});
+    return res.status(200).json({ displayTweets });
   });
 };
 
+// Get self tweets with media
 const selfTweetsWithMedia = (req, res) => {
   const { userId } = req.query;
 
@@ -125,11 +161,10 @@ const selfTweetsWithMedia = (req, res) => {
   });
 };
 
-
 // Get self liked tweets
 const selfLiked = (req, res) => {
-  const {userId} = req.query;
-  User.findOne({ uid:userId }, "liked", (err, userDocument) => {
+  const { userId } = req.query;
+  User.findOne({ uid: userId }, "liked", (err, userDocument) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -141,32 +176,35 @@ const selfLiked = (req, res) => {
 
     const displayTweets = userDocument.liked;
 
-    return res.status(200).json({displayTweets});
+    return res.status(200).json({ displayTweets });
   });
 };
-
 
 // <-- End of SELF TWEET LISTING FUNCTIONS -->
 
-
 // <-- PROFILE PARAMETER UPDATE FUNCTIONS -->
 
-
+// Update Profile
 const UpdateProfileData = (req, res) => {
   const userID = req.userId.id;
-  const { userName, bio, location,birthdate} = req.body;
+  const { userName, bio, location, birthdate } = req.body;
   const date = new Date(birthdate);
-  User.findOneAndUpdate({ uid: userID }, { userName, bio, location,birthdate:date }, (error, updatedUser) => {
-    if (error) {
-      res.status(500).json({ error: "Error updating profile" });
-    } else if (updatedUser) {
-      res.status(200).json({ message: "Updated" });
-    } else {
-      res.status(404).json({ error: "User not found" });
+  User.findOneAndUpdate(
+    { uid: userID },
+    { userName, bio, location, birthdate: date },
+    (error, updatedUser) => {
+      if (error) {
+        res.status(500).json({ error: "Error updating profile" });
+      } else if (updatedUser) {
+        res.status(200).json({ message: "Updated" });
+      } else {
+        res.status(404).json({ error: "User not found" });
+      }
     }
-  });
+  );
 };
 
+// Update Profile Image
 const updateImage = (req, res) => {
   const userID = req.userId.id;
   const { profileImageURL, bgImageURL } = req.body;
@@ -190,7 +228,6 @@ const updateImage = (req, res) => {
   });
 };
 
-
 // <-- End of PROFILE PARAMETER UPDATE FUNCTIONS -->
 
 // <-- DELETE USER FUNCTION -->
@@ -202,14 +239,13 @@ const deleteUser = async (req, res) => {
   const session = driver.session();
 
   try {
-    const user = await User.findOne({ uid:uid });
+    const user = await User.findOne({ uid: uid });
     const email = user.email;
-    console.log(email);
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         await User.deleteOne({ uid });
-        await Tweet.deleteOne({ userid:uid });
+        await Tweet.deleteOne({ userid: uid });
         await admin.auth().deleteUser(uid);
 
         const result = await session.run(
@@ -219,7 +255,11 @@ const deleteUser = async (req, res) => {
 
         session.close();
         try {
-          res.clearCookie('token', { domain: 'localhost', path: '/', secure: true });
+          res.clearCookie("token", {
+            domain: "localhost",
+            path: "/",
+            secure: true,
+          });
           res.sendStatus(200);
         } catch (error) {
           res.status(500).json({ error: "Failed to clear cookies" });
@@ -234,13 +274,15 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
 // <-- End of DELETE USER FUNCTION -->
 
-const getUserId = (req, res) => {
-  const { userHandle} = req.body;
+// <-- UTILITY FUNCTIONS -->
 
-  User.findOne({ userHandle: userHandle },(error, user) => {
+// Fetch user id
+const getUserId = (req, res) => {
+  const { userHandle } = req.body;
+
+  User.findOne({ userHandle: userHandle }, (error, user) => {
     if (error) {
       res.status(500).json({ error: "Error updating profile" });
     } else if (user) {
@@ -251,4 +293,17 @@ const getUserId = (req, res) => {
   });
 };
 
-export { getProfile, selfTweets, selfReplies, selfTweetsWithMedia, selfLiked, deleteUser,UpdateProfileData,getUserId,updateImage };
+// <-- End of UTILITY FUNCTIONS -->
+
+export {
+  getRecommendations,
+  getProfile,
+  selfTweets,
+  selfReplies,
+  selfTweetsWithMedia,
+  selfLiked,
+  deleteUser,
+  UpdateProfileData,
+  getUserId,
+  updateImage,
+};
