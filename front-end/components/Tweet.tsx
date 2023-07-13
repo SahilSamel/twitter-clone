@@ -1,8 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  AiOutlineHeart,
-  AiFillHeart,
-} from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsBookmark, BsFillBookmarkFill } from "react-icons/bs";
 import { FiShare } from "react-icons/fi";
 import { BiMessageRounded } from "react-icons/bi";
@@ -12,6 +9,7 @@ import GET from "@/api/GET/GET";
 import { useSelector } from "react-redux";
 import POST from "@/api/POST/POST";
 import { useRouter } from "next/router";
+import {serverUrl} from "@/constants/appConstant"
 
 interface TweetData {
   text: string;
@@ -41,7 +39,6 @@ const Tweet: React.FC<TweetProps> = ({
   tweetId,
   originalTweet = false,
 }: TweetProps) => {
-  
   const [tweetData, setTweetData] = useState<TweetData | null>(null);
   const currentUser = useSelector((state: any) => state.auth.userId);
   const [showActions, setShowActions] = useState(false);
@@ -65,39 +62,42 @@ const Tweet: React.FC<TweetProps> = ({
 
   const updateTweetData = (action: string) => {
     const jsonData = { tweetUserId: userId, tweetId: tweetId };
-    POST(
-      `/compose/${action}`,
-      jsonData,
-      function (err: any, data: any) {
-        if (err) {
-          console.log(err, "error at axios");
-        } else {
-          setTweetData((prevData) => {
-            if (prevData) {
-              let updatedLikedBy = prevData.likedBy;
-              let updatedBookmarkedBy = prevData.bookmarkedBy;
+    POST(`/compose/${action}`, jsonData, function (err: any, data: any) {
+      if (err) {
+        console.log(err, "error at axios");
+      } else {
+        setTweetData((prevData) => {
+          if (prevData) {
+            let updatedLikedBy = prevData.likedBy;
+            let updatedBookmarkedBy = prevData.bookmarkedBy;
 
-              if (action === "like" || action === "dislike") {
-                updatedLikedBy = !prevData.likedBy;
-              } else if (action === "bookmark" || action === "unbookmark") {
-                updatedBookmarkedBy = !prevData.bookmarkedBy;
-              }
-
-              return {
-                ...prevData,
-                likedBy: updatedLikedBy,
-                bookmarkedBy: updatedBookmarkedBy,
-              };
+            if (action === "like" || action === "dislike") {
+              updatedLikedBy = !prevData.likedBy;
+            } else if (action === "bookmark" || action === "unbookmark") {
+              updatedBookmarkedBy = !prevData.bookmarkedBy;
             }
-            return null;
-          });
-        }
+
+            return {
+              ...prevData,
+              likedBy: updatedLikedBy,
+              bookmarkedBy: updatedBookmarkedBy,
+            };
+          }
+          return null;
+        });
       }
-    );
+    });
   };
 
-  const handleClickOnReply = () => {
-    router.push(`/tweet/${userHandle}/${tweetId}`);
+  const handleShare = (userHandle:string, tweetId:string) => {
+    const url = `${serverUrl}/tweet/${userHandle}/${tweetId}`;
+    navigator.clipboard.writeText(url)
+      .then(() => {
+        console.log("URL copied to clipboard:", url);
+      })
+      .catch((error) => {
+        console.error("Failed to copy URL to clipboard:", error);
+      });
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -120,16 +120,22 @@ const Tweet: React.FC<TweetProps> = ({
 
   if (!tweetData) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '500px' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "500px",
+        }}
+      >
         <img
           src="https://firebasestorage.googleapis.com/v0/b/twitter-clone-ratio.appspot.com/o/Dual%20Ring-1s-200px.png?alt=media&token=f8ee5d3a-3601-446a-bfb1-c0dcc1762b9c"
           alt="Loading"
-          style={{ maxHeight: '40px', maxWidth: '40px' }}
+          style={{ maxHeight: "40px", maxWidth: "40px" }}
         />
       </div>
     );
   }
-  
 
   const {
     type,
@@ -148,12 +154,12 @@ const Tweet: React.FC<TweetProps> = ({
     userName,
   } = tweetData;
 
-  const formattedTimestamp = new Date(timestamp).toLocaleString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+  const formattedTimestamp = new Date(timestamp).toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   });
 
   return (
@@ -167,13 +173,13 @@ const Tweet: React.FC<TweetProps> = ({
         />
       )}
       <div
-        className={`flex border border-b-0 border-l-0 border-r-0 border-slate-700 ${
+        className={`flex shrink-0 border border-b-0 border-l-0 border-r-0 border-slate-700 ${
           derivedUserId ? "border-t-0" : ""
         } text-neutral-500`}
       >
-        <div className="pl-4 pt-3">
+        <div className="ml-4 mt-3 basis-1/12">
           <img
-            className="border border-0 rounded-full"
+            className="border border-0 rounded-full min-w-[40px] min-h-[40px]"
             src="https://pbs.twimg.com/profile_images/1670639644378005508/Flv2gLEd_400x400.jpg"
             height={40}
             width={40}
@@ -186,7 +192,7 @@ const Tweet: React.FC<TweetProps> = ({
             </div>
           )}
         </div>
-        <div className="pl-5 pt-3 max-w-lg">
+        <div className="ml-5 mt-3 mr-5 max-w-lg basis-11/12">
           <div className="mb-2">
             <span style={{ color: "white" }}>{userName}</span>{" "}
             <button
@@ -198,21 +204,22 @@ const Tweet: React.FC<TweetProps> = ({
           </div>
           <div className="text-neutral-50 mb-2">{text}</div>
           {mediaURL && (
-            <div className="mb-3">
-            <img
-              className="border border-0 rounded-2xl max-w-full"
-              src={mediaURL}
-              alt="Tweet Media"
-              style={{ maxHeight: '100%', maxWidth: '100%' }}
-            />
-          </div>
+            <div className="mb-3 tweet-media-responsive">
+              <img
+                className="border border-0 rounded-2xl max-w-full img-responsive"
+                src={mediaURL}
+                alt="Tweet Media"
+              />
+            </div>
           )}
-          <div className="pb-2 text-slate-400 text-sm">{formattedTimestamp}</div>
-          <div className=" pb-3 flex items-center  space-x-12">
+          <div className="pb-2 text-slate-400 text-sm">
+            {formattedTimestamp}
+          </div>
+          <div className=" pb-3 flex items-center justify-between">
             <div className="flex space-x-2">
               <button
                 className="flex items-center text-lg"
-                onClick={handleClickOnReply}
+                onClick={() => router.push(`/tweet/${userHandle}/${tweetId}`)}
               >
                 <BiMessageRounded className="mr-1" />
               </button>
@@ -279,7 +286,7 @@ const Tweet: React.FC<TweetProps> = ({
               <div className="text-sm">{bookmarks}</div>
             </div>
 
-            <button className="flex items-center text-base">
+            <button className="flex items-center text-base" onClick={() => handleShare(userHandle, tweetId)}>
               <FiShare className="mr-1" />
             </button>
           </div>
