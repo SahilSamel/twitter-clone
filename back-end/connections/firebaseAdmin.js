@@ -1,7 +1,6 @@
 import { fileURLToPath } from "url";
 import path, { dirname } from "path";
 import fs from "fs";
-import admin from "firebase-admin";
 
 // Get the directory path of the current module
 const __filename = fileURLToPath(import.meta.url);
