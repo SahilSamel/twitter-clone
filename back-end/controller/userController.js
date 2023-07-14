@@ -74,6 +74,30 @@ const unfollow = async (req, res) => {
   }
 };
 
+// Check if one user follows another user
+const checkIfFollows = (req, res) => {
+  const { currentUserId, userId } = req.body;
+  const session = driver.session();
+  const query = `
+    MATCH (:User {uid: $currentUserId})-[:FOLLOWS]->(followedUser:User {uid: $userId})
+    RETURN COUNT(followedUser) > 0 AS follows
+  `;
+
+  session
+    .run(query, { currentUserId, userId })
+    .then(result => {
+      const follows = result.records[0].get('follows');
+      res.json(follows);
+    })
+    .catch(error => {
+      console.error('Error checking if follows:', error);
+      res.status(500).json({ error: 'Failed to check if follows' });
+    })
+    .finally(() => {
+      session.close();
+    });
+};
+
 //Get Following
 const getFollowingUserIds = (userId) => {
   return new Promise((resolve, reject) => {
@@ -344,6 +368,7 @@ const timeoutEvent = (req, res) => {
 export {
   follow,
   unfollow,
+  checkIfFollows,
   refreshEvent,
   scrollDownEvent,
   timeoutEvent,

@@ -3,6 +3,7 @@ import verifyToken from "../middleware/verifyToken.js";
 import {
   follow,
   unfollow,
+  checkIfFollows,
   refreshEvent,
   scrollDownEvent,
   timeoutEvent,
@@ -21,6 +22,11 @@ router.post("/follow", verifyToken, (req, res) => {
 router.post("/unfollow", verifyToken, (req, res) => {
   unfollow(req, res);
 });
+
+//Check if one user follows another user
+router.post("/checkFollows", verifyToken, (req, res) => {
+  checkIfFollows(req, res);
+})
 
 // <-- End of FOLLOW/UNFOLLOW FUNCTIONALITIES -->
 
