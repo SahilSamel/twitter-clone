@@ -8,34 +8,17 @@ import POST from "@/api/POST/POST";
 import Tweet from "@/components/Tweet";
 import CreateTweet from "@/components/CreateTweet";
 
-interface TweetData {
-  text: string;
-  userHandle: string;
-  userName: string;
-  mediaURL?: string;
-  likes: number;
-  bookmarks: number;
-  replies: number;
-  likedBy: boolean;
-  bookmarkedBy: boolean;
-  derivedUserId?: string;
-  derivedTweetId?: string;
-  type: number;
-  threadId: string;
-  timestamp: string;
-}
-
 const TweetPage = () => {
   const [userId, setuserId] = useState('');
-  const [tweetData, setTweetData] = useState<TweetData | null>(null);
-  const currentUser = useSelector((state: any) => state.auth.userId);
+  const [tweetData, setTweetData] = useState(null);
+  const currentUser = useSelector((state) => state.auth.userId);
   const router = useRouter();
 
   const fetchUserId = () => {
     const data = {
       userHandle: router.query.userHandle,
     };
-    POST("/profile/getUserID", data, function (err: any, data: any) {
+    POST("/profile/getUserID", data, function (err, data) {
       if (err) {
         console.log(err, "error at axios");
       } else {
@@ -50,7 +33,7 @@ const TweetPage = () => {
     }
     GET(
       `/compose/getTweet?userId=${currentUser}&tweetUserId=${userId}&tweetId=${router.query.tweetId}`,
-      function (err: any, data: any) {
+      function (err, data) {
         if (err) {
           console.log(err, "error at axios");
         } else {
@@ -79,7 +62,7 @@ const TweetPage = () => {
       <Tweet
         key={0}
         userId={userId}
-        tweetId={router.query.tweetId?.toString()}
+        tweetId={router.query.tweetId.toString()}
       />
       <CreateTweet type="1" derivedUserId={userId} derivedTweetId={router.query.tweetId}/>
       <TweetList list="getReplies" threadId={tweetData.threadId} />

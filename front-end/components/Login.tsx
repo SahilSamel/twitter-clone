@@ -5,6 +5,7 @@ import { setLastServedTimestamp } from "@/state/cacheStates";
 import { useRouter } from "next/router";
 import { useForm, SubmitHandler } from "react-hook-form";
 import POST from "@/api/POST/POST";
+
 type Inputs = {
   email: string;
   password: string;
@@ -54,9 +55,9 @@ const Login = ({ toggleForm }: LoginProps) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-zinc-900	">
+    <div className="flex justify-center items-center h-screen bg-zinc-900 ">
       <div className="rounded-lg shadow-lg p-6 bg-black">
-        <h1 className="text-3xl font-bold mb-6 text-slate-200	text-center">
+        <h1 className="text-3xl font-bold mb-6 text-slate-200 text-center">
           Log in to Twitter
         </h1>
         {errorMessage && (
@@ -97,13 +98,13 @@ const Login = ({ toggleForm }: LoginProps) => {
           </div>
           <div className="mb-4">
             <label
-              className="block text-slate-200	 text-sm font-bold mb-2"
+              className="block text-slate-200 text-sm font-bold mb-2"
               htmlFor="password"
             >
               Password
             </label>
             <input
-              className="appearance-none border rounded w-full py-2 px-3 text-slate-200	 leading-tight focus:outline-none focus:shadow-outline bg-black"
+              className="appearance-none border rounded w-full py-2 px-3 text-slate-200 leading-tight focus:outline-none focus:shadow-outline bg-black"
               type="password"
               placeholder="Password"
               {...register("password", { required: true })}
@@ -133,7 +134,7 @@ const Login = ({ toggleForm }: LoginProps) => {
               type="button"
               onClick={toggleForm}
             >
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </button>
           </div>
         </form>
