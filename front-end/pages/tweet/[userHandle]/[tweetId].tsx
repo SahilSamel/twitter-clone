@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import GET from "@/api/GET/GET";
 import POST from "@/api/POST/POST";
 import Tweet from "@/components/Tweet";
+import CreateTweet from "@/components/CreateTweet";
 
 interface TweetData {
   text: string;
@@ -47,7 +48,6 @@ const TweetPage = () => {
     if (router.query.tweetId === undefined) {
       return;
     }
-    console.log(userId);
     GET(
       `/compose/getTweet?userId=${currentUser}&tweetUserId=${userId}&tweetId=${router.query.tweetId}`,
       function (err: any, data: any) {
@@ -81,7 +81,7 @@ const TweetPage = () => {
         userId={userId}
         tweetId={router.query.tweetId?.toString()}
       />
-
+      <CreateTweet type="1" derivedUserId={userId} derivedTweetId={router.query.tweetId}/>
       <TweetList list="getReplies" threadId={tweetData.threadId} />
     </>
   );

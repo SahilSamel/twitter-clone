@@ -13,7 +13,8 @@ interface ImagePreview {
   url: string;
 }
 
-const CreateTweet = () => {
+const CreateTweet = (props: any) => {
+  const {type} = props;
   const [text, setText] = useState("");
   const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -58,30 +59,30 @@ const CreateTweet = () => {
 
   const onSubmit = async () => {
     const fileURLs = await uploadFilesToFirebase();
-    POST(
-      "/compose/tweet",
-      {
-        type: 0,
-        text: text,
-        mediaURL: fileURLs[0] || "",
-      },
-      function (err: any, data: any) {
-        if (err) {
-          console.log(err);
-        } else {
-          setText("");
-          setImagePreviews([]);
-          router.push("/"); // Redirect to home page after successful tweet creation
-        }
+    const data = {
+      type: type,
+      text: text,
+      mediaURL: fileURLs[0] || "",
+      derivedUserId: props.derivedUserId || null,
+      derivedTweetId: props.derivedTweetId || null,
+    };
+  
+    console.log(data);
+  
+    POST("/compose/tweet", data, function (err: any, data: any) {
+      if (err) {
+        console.log(err);
+      } else {
+        setText("");
+        setImagePreviews([]);
       }
-    );
+    });
   };
+  
+  
 
   return (
     <div>
-      <div className="border-x border-b border-slate-600 p-3 font-semibold text-2xl">
-        Home
-      </div>
       <div className="border-x border-slate-600 p-3 flex">
         <div>
           <ProfileImage width={40} height={40} className="rounded-full" />

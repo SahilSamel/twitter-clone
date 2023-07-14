@@ -5,6 +5,38 @@ import driver from "../connections/neo4j.js";
 
 //  <--- TWEET CREATION FUNCTIONS --->
 
+// Add reply to thread of original tweet
+const addTweetToReplies = (derivedUserId, derivedTweetId, userId, replyTweetId) => {
+  return new Promise((resolve, reject) => {
+    Tweet.findOne({ userId: derivedUserId })
+      .then((derivedUser) => {
+        const derivedTweet = derivedUser.tweets.find(
+          (tweet) => tweet._id.toString() === derivedTweetId
+        );
+
+        if (derivedTweet) {
+          const derivedThreadId = derivedTweet.threadId;
+          Thread.findOneAndUpdate(
+            { _id: derivedThreadId },
+            { $push: { replies: { userId, tweetId: replyTweetId } } },
+            { new: true }
+          )
+            .then(() => {
+              resolve();
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          resolve();
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
 //  Create a new Tweet
 const createTweet = (req, res) => {
   return new Promise((resolve, reject) => {
@@ -43,14 +75,26 @@ const createTweet = (req, res) => {
           { new: true, upsert: true }
         )
           .then((updatedUser) => {
-            resolve(
-              {
-                replytweetId:
-                  updatedUser.tweets[updatedUser.tweets.length - 1]._id,
-                replythreadId: threadId,
-              },
-              res.status(201).json({ Message: "Tweet Created" })
-            );
+            const replyTweetId = updatedUser.tweets[0]._id;
+            const replyThreadId = threadId;
+
+            if (type === 0) {
+              resolve(
+                { replytweetId: replyTweetId, replythreadId: replyThreadId },
+                res.status(201).json({ Message: "Tweet Created" })
+              );
+            } else {
+              addTweetToReplies(derivedUserId, derivedTweetId, userId, replyTweetId)
+                .then(() => {
+                  resolve(
+                    { replytweetId: replyTweetId, replythreadId: replyThreadId },
+                    res.status(201).json({ Message: "Tweet Created" })
+                  );
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+            }
           })
           .catch((error) => {
             reject(error);
@@ -61,6 +105,7 @@ const createTweet = (req, res) => {
       });
   });
 };
+
 
 // Delete Tweet
 const deleteTweet = (req, res) => {
