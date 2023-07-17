@@ -78,7 +78,7 @@ const createTweet = (req, res) => {
             const replyTweetId = updatedUser.tweets[0]._id;
             const replyThreadId = threadId;
 
-            if (type === 0) {
+            if (newTweet.type === 0) {
               resolve(
                 { replytweetId: replyTweetId, replythreadId: replyThreadId },
                 res.status(201).json({ Message: "Tweet Created" })
